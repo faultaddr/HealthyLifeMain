@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="plateRadius" format="integer" />
+    <attr name="plateWidth" format="integer" />
+    <attr name="backPicSource" format="reference" />
+    <attr name="stepCount" format="integer" />
+    <declare-styleable name="MainPicView">
+        <attr name="backPicSource" />
+        <attr name="stepCount" />
+        <attr name="plateRadius" />
+        <attr name="plateWidth" />
+    </declare-styleable>
+</resources>

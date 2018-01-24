@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "bundles": [
+    {
+      "type":"app",
+      "uri": "main",
+      "pkg": "cn.panyunyi.healthylife.app.main"
+    }
+  ]
+}
