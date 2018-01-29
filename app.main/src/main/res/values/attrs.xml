@@ -10,4 +10,15 @@
         <attr name="plateRadius" />
         <attr name="plateWidth" />
     </declare-styleable>
+    <declare-styleable name="RadarView">
+        <attr name="startColor" format="color" />
+        //起始颜色
+        <attr name="endColor" format="color" />
+        //终止颜色
+        <attr name="bgColor" format="color" />
+        //雷达背景颜色
+        <attr name="circleCount" format="integer" />//圆圈数量
+        <attr name="lineColor" format="color" />
+        //绘制圆圈和基线的颜色
+    </declare-styleable>
 </resources>

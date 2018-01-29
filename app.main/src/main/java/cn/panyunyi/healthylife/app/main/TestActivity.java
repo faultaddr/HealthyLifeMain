@@ -1,29 +1,26 @@
 package cn.panyunyi.healthylife.app.main;
 
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
-import android.animation.ValueAnimator;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.BounceInterpolator;
-import android.widget.Button;
-import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.panyunyi.healthylife.app.main.ui.custom.RadarView;
 
 public class TestActivity extends AppCompatActivity {
 /*    @BindView(R.id.text)
     TextView textView;
     @BindView(R.id.press)
     Button button;*/
-
+@BindView(R.id.gradientDemo)
+RadarView gardientDemo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
+        ButterKnife.bind(this);
+        btnOpen(gardientDemo);
 
 /*        button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,5 +49,15 @@ public class TestActivity extends AppCompatActivity {
 /*
               }           
           });      */
+
+
+    }
+
+    public void btnOpen(View view) {
+        gardientDemo.startScan();
+    }
+
+    public void btnClose(View view) {
+        gardientDemo.stopScan();
     }
 }
