@@ -1,6 +1,7 @@
 package cn.panyunyi.healthylife.app.main;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -21,6 +22,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.panyunyi.healthylife.app.main.ui.custom.RadarView;
 
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.main_pic)
@@ -56,10 +58,20 @@ public class MainActivity extends AppCompatActivity {
                 build(this);
 */
 
-
+        RadarView.ViewConfig config = new RadarView.ViewConfig();
+        RadarView radarView =
+                config.startColor(Color.parseColor("#fffff1"))
+                        .endColor(Color.parseColor("#c2ffec"))
+                        .circleCount(1)
+                        .lineColor(Color.parseColor("#c7ffec"))
+                        .bgPic(R.drawable.main_activity_main_pic)
+                        .config(this);
         //scrollView.setZoomView(imageView);
         // pullToZoomListViewEx.setZoomView(radarView);
 
+        radarView.startScan();
+
+        pullToZoomListViewEx.setZoomView(radarView);
 
         String[] adapterData = new String[]{"Activity", "Service", "Content Provider", "Intent", "BroadcastReceiver", "ADT", "Sqlite3", "HttpClient",
                 "DDMS", "Android Studio", "Fragment", "Loader", "Activity", "Service", "Content Provider", "Intent",

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     tools:context="cn.panyunyi.healthylife.app.main.TestActivity">
 
     <cn.panyunyi.healthylife.app.main.ui.custom.RadarView
@@ -21,4 +21,11 @@
         app:lineColor="#fffff1"
         app:startColor="#ffffff" />
 
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        android:text="aaa"
+        android:textColor="#000000" />
 </LinearLayout>

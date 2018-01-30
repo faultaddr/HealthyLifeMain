@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="cn.panyunyi.healthylife.app.main.MainActivity">
 
-    <cn.panyunyi.healthylife.app.main.ui.custom.RadarView
-        android:id="@+id/gradientDemo"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        android:layout_gravity="center_horizontal"
-        app:bgColor="#777777"
-        app:circleCount="1"
-        app:endColor="#ffffe4"
-        app:lineColor="#fffff1"
-        app:startColor="#ffffff" />
     <com.ecloud.pulltozoomview.PullToZoomListViewEx
         android:id="@+id/main_pic"
         android:layout_width="match_parent"

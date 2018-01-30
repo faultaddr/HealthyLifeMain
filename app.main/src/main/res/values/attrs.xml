@@ -20,5 +20,6 @@
         <attr name="circleCount" format="integer" />//圆圈数量
         <attr name="lineColor" format="color" />
         //绘制圆圈和基线的颜色
+        <attr name="bgPic" format="reference"></attr>
     </declare-styleable>
 </resources>
