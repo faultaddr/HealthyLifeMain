@@ -3,7 +3,6 @@
     <attr name="plateRadius" format="integer" />
     <attr name="plateWidth" format="integer" />
     <attr name="backPicSource" format="reference" />
-    <attr name="stepCount" format="integer" />
     <declare-styleable name="MainPicView">
         <attr name="backPicSource" />
         <attr name="stepCount" />
@@ -21,5 +20,6 @@
         <attr name="lineColor" format="color" />
         //绘制圆圈和基线的颜色
         <attr name="bgPic" format="reference"></attr>
+        <attr name="stepCount" format="integer"></attr>
     </declare-styleable>
 </resources>

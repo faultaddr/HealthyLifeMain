@@ -1,6 +1,7 @@
 package cn.panyunyi.healthylife.app.main.ui.custom;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -20,9 +21,14 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.InputStream;
 
+import cn.panyunyi.healthylife.app.main.MainActivity;
 import cn.panyunyi.healthylife.app.main.R;
+import cn.panyunyi.healthylife.app.main.event.MessageEvent;
 
 
 /**
@@ -52,6 +58,9 @@ public class RadarView extends View {
     private Shader radarShader;  //paintShader
     private int bgPic = R.drawable.main_activity_main_pic;
     private Bitmap mBitmap;
+
+    private String stepCount;
+
     //雷达扫描时候的起始和终止颜色
     private int startColor = 0x0000ff00;
     private int endColor = 0xaa00ff00;
@@ -96,6 +105,7 @@ public class RadarView extends View {
         init(context, attrs);
         initPaint();
     }
+
     //初始化，拓展可设置参数供布局使用
     private void init(Context context, AttributeSet attrs) {
         if (attrs != null) {
@@ -113,7 +123,7 @@ public class RadarView extends View {
         mRadarPaint = new Paint(Paint.ANTI_ALIAS_FLAG);     //设置抗锯齿
         mRadarPaint.setColor(mRadarLineColor);                  //画笔颜色
         mRadarPaint.setStyle(Paint.Style.STROKE);           //设置空心的画笔，只画圆边
-        mRadarPaint.setStrokeWidth(3);                      //画笔宽度
+        mRadarPaint.setStrokeWidth((float)0.3);                      //画笔宽度
 
 
         mRadarBg = new Paint(Paint.ANTI_ALIAS_FLAG);     //设置抗锯齿
@@ -166,10 +176,11 @@ public class RadarView extends View {
     }
 
     private void setParams() {
-        InputStream is = getResources().openRawResource(bgPic);
+        @SuppressLint("ResourceType") InputStream is = getResources().openRawResource(bgPic);
 
         mBitmap = BitmapFactory.decodeStream(is).copy(Bitmap.Config.ARGB_8888, true);
     }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -187,6 +198,21 @@ public class RadarView extends View {
         Rect mSrcRect = new Rect(0, 0, mBitmap.getWidth(), mBitmap.getHeight());
         RectF mDestRect = new RectF(0, 0, getMeasuredWidth(), getMeasuredHeight());
         canvas.drawBitmap(mBitmap, mSrcRect, mDestRect, mRadarPaint);
+        Paint textPaint =new Paint();
+        textPaint.setAntiAlias(true);
+        textPaint.setColor(Color.WHITE);
+        textPaint.setFakeBoldText(true);
+        textPaint.setStyle(Paint.Style.STROKE);
+        textPaint.setTextSize((float)80.0);
+
+        stepCount= MainActivity.count+"";
+        canvas.drawText(stepCount,mRadarRadius-textPaint.measureText(stepCount)/2,mRadarRadius / 2,textPaint);
+        textPaint.setTextSize((float)40.0);
+        String s=MainActivity.count*0.5+"m|0K";
+        ;
+        canvas.drawText(s,mRadarRadius-textPaint.measureText(s)/2,mRadarRadius / 2+80,textPaint);
+
+
         canvas.translate(mRadarRadius, mRadarRadius / 2);
         //将画板移动到屏幕的中心点
 
@@ -194,9 +220,9 @@ public class RadarView extends View {
         // canvas.drawCircle(0, 0, mRadarRadius, mRadarBg);  //绘制底色(默认为黑色)，可以使雷达的线看起来更清晰
         canvas.concat(matrix);
         for (int i = 1; i <= radarCircleCount; i++) {     //根据用户设定的圆个数进行绘制
-            for (int j = 0; j < 10; j++) {
-                canvas.drawCircle(0, 0, (float) (mRadarRadius / 2 - 20 - j * 2), mRadarPaint);
-                canvas.drawCircle(j, j * 2, (float) (mRadarRadius / 2 - 20), mRadarPaint);
+            for (int j = 0; j < 5; j++) {
+                canvas.drawCircle(0, 0, (float) (mRadarRadius / 2 - 20 - j * 3), mRadarPaint);
+                canvas.drawCircle(j, j * 2, (float) (mRadarRadius / 2 - 30), mRadarPaint);
             }
             //canvas.drawColor(0, PorterDuff.Mode.CLEAR);//画圆圈
         }
@@ -220,6 +246,8 @@ public class RadarView extends View {
     public void stopScan() {
         mHandler.removeMessages(MSG_WHAT);
     }
+
+
 
     public static class ViewConfig {
         public int startColor;
@@ -270,4 +298,5 @@ public class RadarView extends View {
         }
 
     }
+
 }

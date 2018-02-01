@@ -2,6 +2,10 @@ package cn.panyunyi.healthylife.app.main;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -24,12 +28,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.panyunyi.healthylife.app.main.ui.custom.RadarView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
+    private static final int sensorTypeD = Sensor.TYPE_STEP_DETECTOR;
+    private static final int sensorTypeC = Sensor.TYPE_STEP_COUNTER;
+
+
     @BindView(R.id.main_pic)
     PullToZoomListViewEx pullToZoomListViewEx;
 
     private EventBus eventBus = null;
-
+    private SensorManager mSensorManager;
+    private Sensor mStepDetector;
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -47,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
         eventBus = EventBus.getDefault();
         eventBus.register(this);
         helloEventBus("hhh");
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mStepDetector = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+
 
 /*
         MainPicView.Builder builder=new MainPicView.Builder();
@@ -64,10 +76,8 @@ public class MainActivity extends AppCompatActivity {
                         .endColor(Color.parseColor("#c2ffec"))
                         .circleCount(1)
                         .lineColor(Color.parseColor("#c7ffec"))
-                        .bgPic(R.drawable.main_activity_main_pic)
+                        .bgPic(R.drawable.main)
                         .config(this);
-        //scrollView.setZoomView(imageView);
-        // pullToZoomListViewEx.setZoomView(radarView);
 
         radarView.startScan();
 
@@ -96,8 +106,8 @@ public class MainActivity extends AppCompatActivity {
         pullToZoomListViewEx.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent=new Intent();
-                intent.setClass(MainActivity.this,TestActivity.class);
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, TestActivity.class);
                 startActivity(intent);
             }
         });
@@ -105,6 +115,41 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void helloEventBus(String message) {
-        Toast.makeText(this, ">>>eventbus>>>" + message, Toast.LENGTH_LONG).show();
+
+    }
+
+    public static int count = 0;
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+
+        switch (sensorEvent.sensor.getType()) {
+            case sensorTypeC: {
+                ;
+            }
+            break;
+            case sensorTypeD: {
+                count += (int) sensorEvent.values[0];
+            }
+        }
+        //Toast.makeText(TestActivity.this, "步数：" + sensorEvent.values[0] + "》》》", Toast.LENGTH_SHORT).show();
+        //textView.setText(sensorEvent.values[0]+"步");
+
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(this, mStepDetector, SensorManager.SENSOR_DELAY_FASTEST);
+    }
+
+    protected void onPause() {
+        super.onPause();
+        mSensorManager.unregisterListener(this);
     }
 }

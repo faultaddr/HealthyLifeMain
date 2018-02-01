@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">App.main</string>
+    <string name="add_friends">添加好友</string>
+    <string name="friends_list">好友列表</string>
+    <string name="new_friend_request">新好友请求</string>
+    <string name="request_accept">接受</string>
+    <string name="request_decline">拒绝</string>
+    <string name="my_friend">我的好友</string>
 </resources>
