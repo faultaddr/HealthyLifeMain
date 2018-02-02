@@ -56,7 +56,7 @@ public class RadarView extends View {
 
     private int mRadarBgColor = Color.BLACK; //雷达圆圈背景色
     private Shader radarShader;  //paintShader
-    private int bgPic = R.drawable.main_activity_main_pic;
+    private int bgPic = R.drawable.main;
     private Bitmap mBitmap;
 
     private String stepCount;
@@ -176,7 +176,7 @@ public class RadarView extends View {
     }
 
     private void setParams() {
-        @SuppressLint("ResourceType") InputStream is = getResources().openRawResource(bgPic);
+        @SuppressLint("ResourceType") InputStream is = getResources().openRawResource(R.drawable.main);
 
         mBitmap = BitmapFactory.decodeStream(is).copy(Bitmap.Config.ARGB_8888, true);
     }

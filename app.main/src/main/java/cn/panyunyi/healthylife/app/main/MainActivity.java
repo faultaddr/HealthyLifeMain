@@ -1,7 +1,10 @@
 package cn.panyunyi.healthylife.app.main;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -9,14 +12,19 @@ import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.v4.view.WindowCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
+import android.widget.ListAdapter;
+import android.widget.TextView;
 
 import com.ecloud.pulltozoomview.PullToZoomListViewEx;
 
@@ -41,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor mStepDetector;
 
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,12 +92,81 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         pullToZoomListViewEx.setZoomView(radarView);
 
-        String[] adapterData = new String[]{"Activity", "Service", "Content Provider", "Intent", "BroadcastReceiver", "ADT", "Sqlite3", "HttpClient",
-                "DDMS", "Android Studio", "Fragment", "Loader", "Activity", "Service", "Content Provider", "Intent",
-                "BroadcastReceiver", "ADT", "Sqlite3", "HttpClient", "Activity", "Service", "Content Provider", "Intent",
-                "BroadcastReceiver", "ADT", "Sqlite3", "HttpClient"};
+        Window window=this.getWindow();
+        window.setStatusBarColor(Color.BLACK);
+        pullToZoomListViewEx.setAdapter(new ListAdapter() {
+            @Override
+            public boolean areAllItemsEnabled() {
+                return false;
+            }
 
-        pullToZoomListViewEx.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, adapterData));
+            @Override
+            public boolean isEnabled(int i) {
+                return false;
+            }
+
+            @Override
+            public void registerDataSetObserver(DataSetObserver dataSetObserver) {
+
+            }
+
+            @Override
+            public void unregisterDataSetObserver(DataSetObserver dataSetObserver) {
+
+            }
+
+            @Override
+            public int getCount() {
+                return 4;
+            }
+
+            @Override
+            public Object getItem(int i) {
+                return null;
+            }
+
+            @Override
+            public long getItemId(int i) {
+                return 0;
+            }
+
+            @Override
+            public boolean hasStableIds() {
+                return false;
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public View getView(int i, View view, ViewGroup viewGroup) {
+                int s[]={R.string.click_to_find_more_interesting_things,R.string.heart_rate,R.string.blood_pressure,R.string.blood_oxygen};
+                int d[]={R.drawable.lamp,R.drawable.heart,R.drawable.heart_pressure,R.drawable.oxygen};
+                LayoutInflater inflater=LayoutInflater.from(MainActivity.this);
+                view=inflater.inflate(R.layout.main_page_list_item,null);
+                TextView textView=(TextView) view.findViewById(R.id.main_list_item_text);
+                textView.setText(MainActivity.this.getText(s[i]));
+                textView.setTextSize(20);
+                Drawable drawable=MainActivity.this.getDrawable(d[i]);
+                drawable.setBounds(20,0,60,40);
+                textView.setCompoundDrawables(drawable,null,null,null);
+
+                return view;
+            }
+
+            @Override
+            public int getItemViewType(int i) {
+                return 0;
+            }
+
+            @Override
+            public int getViewTypeCount() {
+                return 4;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+        });
         pullToZoomListViewEx.getPullRootView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

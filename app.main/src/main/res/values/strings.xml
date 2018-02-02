@@ -6,4 +6,8 @@
     <string name="request_accept">接受</string>
     <string name="request_decline">拒绝</string>
     <string name="my_friend">我的好友</string>
+    <string name="click_to_find_more_interesting_things">点击发现更多有趣玩法</string>
+    <string name="heart_rate">心率</string>
+    <string name="blood_pressure">血压</string>
+    <string name="blood_oxygen">血氧</string>
 </resources>
