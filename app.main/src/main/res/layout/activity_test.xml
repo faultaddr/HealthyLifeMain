@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="cn.panyunyi.healthylife.app.main.TestActivity">
+    tools:context="cn.panyunyi.healthylife.app.server.TestActivity">
 
-    <cn.panyunyi.healthylife.app.main.ui.custom.RadarView
+    <cn.panyunyi.healthylife.app.server.ui.custom.RadarView
         android:id="@+id/gradientDemo"
         android:layout_width="247dp"
         android:layout_height="247dp"

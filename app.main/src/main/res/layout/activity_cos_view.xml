@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cn.panyunyi.healthylife.app.main.ui.activity.CosViewActivity">
-<cn.panyunyi.healthylife.app.main.ui.activity.MyView
+    tools:context="cn.panyunyi.healthylife.app.server.ui.activity.CosViewActivity">
+<cn.panyunyi.healthylife.app.server.ui.activity.MyView
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 </android.support.constraint.ConstraintLayout>
