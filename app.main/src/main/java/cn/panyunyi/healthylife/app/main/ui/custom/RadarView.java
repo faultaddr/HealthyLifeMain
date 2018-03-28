@@ -37,7 +37,7 @@ import cn.panyunyi.healthylife.app.main.event.MessageEvent;
 public class RadarView extends View {
     private static final int MSG_WHAT = 10086;
     private static final int DELAY_TIME = 20;
-    private final String TAG = "QDX";
+    private final String TAG = "RadarView";
     //设置默认宽高，雷达一般都是圆形，所以我们下面取宽高会去Math.min(宽,高)
     private final int DEFAULT_WIDTH = 50;
     private final int DEFAULT_HEIGHT = 50;
@@ -194,7 +194,6 @@ public class RadarView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Log.i(TAG, "onDraw   " + rotateAngel);
         Rect mSrcRect = new Rect(0, 0, mBitmap.getWidth(), mBitmap.getHeight());
         RectF mDestRect = new RectF(0, 0, getMeasuredWidth(), getMeasuredHeight());
         canvas.drawBitmap(mBitmap, mSrcRect, mDestRect, mRadarPaint);
