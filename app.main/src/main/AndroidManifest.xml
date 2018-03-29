@@ -16,30 +16,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name="cn.panyunyi.healthylife.app.server.MainActivity">
-
-        </activity>
+        <activity android:name=".MainActivity"></activity>
         <activity
-            android:name="cn.panyunyi.healthylife.app.server.TestActivity"
+            android:name=".TestActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:windowSoftInputMode="adjustNothing"></activity>
+            android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:name="cn.panyunyi.healthylife.app.server.ui.activity.MonitorActivity"
+            android:name=".ui.activity.MonitorActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:windowSoftInputMode="adjustNothing"></activity>
-        <activity android:name="cn.panyunyi.healthylife.app.server.AidlTestActivity">
-
-
+            android:windowSoftInputMode="adjustNothing" />
+        <activity android:name=".AidlTestActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".StepService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

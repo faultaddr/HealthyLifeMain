@@ -139,8 +139,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //Toast.makeText(TestActivity.this, "步数：" + sensorEvent.values[0] + "》》》", Toast.LENGTH_SHORT).show();
         //textView.setText(sensorEvent.values[0]+"步");
 
-
     }
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
