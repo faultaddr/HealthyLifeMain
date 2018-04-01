@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.graphics.Paint.Align;
 import android.hardware.Camera;
 import android.hardware.Camera.PreviewCallback;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -92,6 +93,7 @@ public class MonitorActivity extends Activity{
     private static int averageIndex = 0;
     private static final int averageArraySize = 4;
     private static final int[] averageArray = new int[averageArraySize];
+    private final static String TAG="MonitorActivity";
 
     /**
      * 类型枚举
@@ -127,6 +129,7 @@ public class MonitorActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_monitor);
         initConfig();
+        requestPermission();
     }
 
     /**
@@ -347,10 +350,14 @@ public class MonitorActivity extends Activity{
     public void onPause() {
         super.onPause();
         wakeLock.release();
-        camera.setPreviewCallback(null);
-        camera.stopPreview();
-        camera.release();
-        camera = null;
+        try {
+            camera.setPreviewCallback(null);
+            camera.stopPreview();
+            camera.release();
+            camera = null;
+        }catch (Exception e){
+            Log.e(TAG,e.getMessage());
+        }
     }
     /**
      * 注册权限申请回调

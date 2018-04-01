@@ -1,4 +1,4 @@
-package cn.panyunyi.healthylife.app.server;
+package cn.panyunyi.healthylife.app.server.biz.local.service;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -23,10 +23,20 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import cn.panyunyi.healthylife.app.server.Constant;
+import cn.panyunyi.healthylife.app.server.MainActivity;
+import cn.panyunyi.healthylife.app.server.R;
+
+import cn.panyunyi.healthylife.app.server.biz.local.dao.StepDataDao;
+import cn.panyunyi.healthylife.app.server.biz.local.model.StepEntity;
+import cn.panyunyi.healthylife.app.server.event.MessageEvent;
 import cn.panyunyi.healthylife.app.server.util.TimeUtil;
 
 public class StepService extends Service implements SensorEventListener {
@@ -58,6 +68,8 @@ public class StepService extends Service implements SensorEventListener {
     private Notification.Builder builder;
     private NotificationManager notificationManager;
     private Intent nfIntent;
+
+    private EventBus eventBus;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -69,7 +81,13 @@ public class StepService extends Service implements SensorEventListener {
         }).start();
         startTimeCount();
         initTodayData();
+        initEventBus();
     }
+
+    private void initEventBus() {
+        eventBus = EventBus.getDefault();
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -191,14 +209,16 @@ public class StepService extends Service implements SensorEventListener {
      * 初始化当天数据
      */
     private void initTodayData() {
+        Log.i(TAG,"initTodayData");
         //获取当前时间
         CURRENT_DATE = TimeUtil.getCurrentDate();
         //获取数据库
         stepDataDao = new StepDataDao(getApplicationContext());
         //获取当天的数据，用于展示
-        StepEntity entity = stepDataDao.getCurDataByDate(CURRENT_DATE);
+        StepEntity entity = stepDataDao.getCurrentDataByDate(CURRENT_DATE);
         //为空则说明还没有该天的数据，有则说明已经开始当天的计步了
         if (entity == null) {
+            Log.i(TAG,"today's record is null");
             CURRENT_STEP = 0;
         } else {
             CURRENT_STEP = Integer.parseInt(entity.getSteps());
@@ -208,6 +228,7 @@ public class StepService extends Service implements SensorEventListener {
      * 监听晚上0点变化初始化数据
      */
     private void isNewDay() {
+        Log.i(TAG,"isNewDay");
         String time = "00:00";
         if (time.equals(new SimpleDateFormat("HH:mm").format(new Date())) ||
                 !CURRENT_DATE.equals(TimeUtil.getCurrentDate())) {
@@ -218,6 +239,7 @@ public class StepService extends Service implements SensorEventListener {
      * 获取传感器实例
      */
     private void getStepDetector() {
+        Log.i(TAG,"getStepDetector");
         if (sensorManager != null) {
             sensorManager = null;
         }
@@ -234,6 +256,7 @@ public class StepService extends Service implements SensorEventListener {
      * 添加传感器监听
      */
     private void addCountStepListener() {
+        Log.i(TAG,"addCountStepListener");
         Sensor countSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         Sensor detectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
         if (countSensor != null) {
@@ -252,6 +275,7 @@ public class StepService extends Service implements SensorEventListener {
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
+        Log.i(TAG,"onSensorChanged");
         if (stepSensor == 0) {
             int tempStep = (int) event.values[0];
             if (!hasRecord) {
@@ -267,6 +291,7 @@ public class StepService extends Service implements SensorEventListener {
                 CURRENT_STEP++;
             }
         }
+        EventBus.getDefault().postSticky(new MessageEvent(0,CURRENT_STEP+""));
     }
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -275,6 +300,7 @@ public class StepService extends Service implements SensorEventListener {
      * 开始倒计时，去存储步数到数据库中
      */
     private void startTimeCount() {
+        Log.i(TAG,"startTimeCount");
         timeCount = new TimeCount(saveDuration, 1000);
         timeCount.start();
     }
@@ -306,19 +332,21 @@ public class StepService extends Service implements SensorEventListener {
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void saveStepData() {
+        Log.i(TAG,"saveStepData");
         //查询数据库中的数据
-        StepEntity entity = stepDataDao.getCurDataByDate(CURRENT_DATE);
+        StepEntity entity = stepDataDao.getCurrentDataByDate(CURRENT_DATE);
+        Log.i(TAG,CURRENT_DATE+":"+CURRENT_STEP);
         //为空则说明还没有该天的数据，有则说明已经开始当天的计步了
         if (entity == null) {
-            //没有则新建一条数据
-            entity = new StepEntity();
-            entity.setCurDate(CURRENT_DATE);
-            entity.setSteps(String.valueOf(CURRENT_STEP));
-            stepDataDao.addNewData(entity);
+                //没有则新建一条数据
+                entity = new StepEntity();
+                entity.setCurDate(CURRENT_DATE);
+                entity.setSteps(String.valueOf(CURRENT_STEP));
+                stepDataDao.addNewData(entity);
         } else {
             //有则更新当前的数据
             entity.setSteps(String.valueOf(CURRENT_STEP));
-            stepDataDao.updateCurData(entity);
+            stepDataDao.updateCurrentData(entity);
         }
         builder.setContentIntent(PendingIntent.getActivity(this, 0, nfIntent, 0)) // 设置PendingIntent
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher)) // 设置下拉列表中的图标(大图标)

@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 
 import com.ecloud.pulltozoomview.PullToZoomListViewEx;
 
@@ -27,23 +28,30 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.panyunyi.healthylife.app.main.MyEventBusIndex;
+import cn.panyunyi.healthylife.app.server.event.MessageEvent;
 import cn.panyunyi.healthylife.app.server.ui.activity.MonitorActivity;
 import cn.panyunyi.healthylife.app.server.ui.adapter.MainListAdapter;
 import cn.panyunyi.healthylife.app.server.ui.custom.RadarView;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public String TAG = "MainActivity";
 
-    private static final int sensorTypeD = Sensor.TYPE_STEP_DETECTOR;
-    private static final int sensorTypeC = Sensor.TYPE_STEP_COUNTER;
 
 
     @BindView(R.id.main_pic)
     PullToZoomListViewEx pullToZoomListViewEx;
+    @BindView(R.id.mine)
+    LinearLayout mMine;
+    @BindView(R.id.find)
+    LinearLayout mFind;
+    @BindView(R.id.sports)
+    LinearLayout mSports;
+    @BindView(R.id.main_page)
+    LinearLayout mMainPage;
+
+
 
     private EventBus eventBus = null;
-    private SensorManager mSensorManager;
-    private Sensor mStepDetector;
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -61,16 +69,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 // Now the default instance uses the given index. Use it like this:
         eventBus = EventBus.getDefault();
         eventBus.register(this);
-        helloEventBus("hhh");
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mStepDetector = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+
         initMainView();
         initOtherView();
 
     }
 
     private void initOtherView() {
-
+        mFind.setOnClickListener(this);
+        mMainPage.setOnClickListener(this);
+        mMine.setOnClickListener(this);
+        mSports.setOnClickListener(this);
 
     }
 
@@ -82,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         .endColor(Color.parseColor("#c2ffec"))
                         .circleCount(1)
                         .lineColor(Color.parseColor("#c7ffec"))
-                        .bgPic(R.drawable.main)
+                        .bgPic(R.drawable.main_pic)
                         .config(this);
 
         radarView.startScan();
@@ -109,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         pullToZoomListViewEx.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.i(TAG,"list item was vbvclicked");
+                Log.i(TAG,"list item "+i+" was clicked");
                     Intent intent = new Intent();
                     intent.setClass(MainActivity.this, MonitorActivity.class);
                     startActivity(intent);
@@ -117,43 +126,58 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         });
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void helloEventBus(String message) {
-
+    /**
+     * 粘性事件
+     * @param event
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onDataSynEvent(MessageEvent event) {
+        switch (event.getMessageType()){
+            case 0:
+                count= Integer.parseInt(event.getMessageContent());
+                break;
+        }
     }
 
     public static int count = 0;
 
-    @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-
-        switch (sensorEvent.sensor.getType()) {
-            case sensorTypeC: {
-                ;
-            }
-            break;
-            case sensorTypeD: {
-                count += (int) sensorEvent.values[0];
-            }
-        }
-        //Toast.makeText(TestActivity.this, "步数：" + sensorEvent.values[0] + "》》》", Toast.LENGTH_SHORT).show();
-        //textView.setText(sensorEvent.values[0]+"步");
-
-    }
 
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-
-    }
 
     protected void onResume() {
         super.onResume();
-        mSensorManager.registerListener(this, mStepDetector, SensorManager.SENSOR_DELAY_FASTEST);
+
     }
 
     protected void onPause() {
         super.onPause();
-        mSensorManager.unregisterListener(this);
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.main_page:
+                /*
+                * 跳转到主页面
+                * */
+                break;
+            case R.id.sports:
+                /*
+                * 跳转到运动页面
+                * */
+                break;
+            case R.id.find:
+                /*
+                *
+                * 推荐相关信息
+                * */
+                break;
+            case R.id.mine:
+                /*
+                * 我的设置等相关
+                * */
+                break;
+        }
     }
 }

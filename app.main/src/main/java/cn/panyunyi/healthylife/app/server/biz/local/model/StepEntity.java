@@ -1,8 +1,8 @@
-package cn.panyunyi.healthylife.app.server;
+package cn.panyunyi.healthylife.app.server.biz.local.model;
 
-class StepEntity {
-    String steps;
-    String currentDate;
+public class StepEntity {
+    public String steps;
+    public String currentDate;
     public String getSteps() {
         return this.steps;
     }

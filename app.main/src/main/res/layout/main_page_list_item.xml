@@ -20,11 +20,12 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:drawableRight="@drawable/forward_row"
+        android:textSize="10sp"
         />
     <View
-        android:background="#ffffef"
+        android:background="#ececec"
         android:layout_width="match_parent"
-        android:layout_height="8dp"></View>
+        android:layout_height="1dp"/>
 </LinearLayout>
 
 </LinearLayout>

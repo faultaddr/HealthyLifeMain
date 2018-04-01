@@ -1,4 +1,4 @@
-package cn.panyunyi.healthylife.app.server;
+package cn.panyunyi.healthylife.app.server.db;
 
 import android.content.ContentValues;
 import android.content.Context;

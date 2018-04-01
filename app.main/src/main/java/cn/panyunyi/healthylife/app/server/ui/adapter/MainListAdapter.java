@@ -76,9 +76,9 @@ public class MainListAdapter extends BaseAdapter{
         view=inflater.inflate(R.layout.main_page_list_item,null);
         TextView textView=(TextView) view.findViewById(R.id.main_list_item_text);
         textView.setText(mContext.getText(s[i]));
-        textView.setTextSize(20);
+        textView.setTextSize(16);
         Drawable drawable=mContext.getDrawable(d[i]);
-        drawable.setBounds(20,0,60,40);
+        drawable.setBounds(20,0,80,60);
         textView.setCompoundDrawables(drawable,null,null,null);
 
         return view;

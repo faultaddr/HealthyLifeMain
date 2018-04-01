@@ -11,4 +11,8 @@
     <string name="blood_pressure">血压</string>
     <string name="blood_oxygen">血氧</string>
     <string name="show">显示</string>
+    <string name="activity_status">状态</string>
+    <string name="activity_sports">运动</string>
+    <string name="activity_find">发现</string>
+    <string name="activity_mine">我的</string>
 </resources>

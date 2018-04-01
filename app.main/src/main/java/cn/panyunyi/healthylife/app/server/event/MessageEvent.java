@@ -5,8 +5,9 @@ public class MessageEvent {
     private int messageType;
     private String messageContent;
 
-    public MessageEvent(int message) {
+    public MessageEvent(int message,String content) {
         this.messageType = message;
+        this.messageContent=content;
     }
 
     public int getMessage() {

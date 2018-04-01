@@ -172,7 +172,7 @@ public class RadarView extends View {
     }
 
     private void setParams() {
-        @SuppressLint("ResourceType") InputStream is = getResources().openRawResource(R.drawable.main);
+        @SuppressLint("ResourceType") InputStream is = getResources().openRawResource(R.drawable.main_pic);
 
         mBitmap = BitmapFactory.decodeStream(is).copy(Bitmap.Config.ARGB_8888, true);
     }
