@@ -36,20 +36,20 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".AidlTestActivity">
-
-        </activity>
+        <activity android:name=".AidlTestActivity"></activity>
 
         <service
             android:name=".biz.local.service.StepService"
             android:enabled="true"
             android:exported="true">
-
             <intent-filter>
-                <action android:name="cn.panyunyi.StepService"></action>
+                <action android:name="cn.panyunyi.StepService" />
             </intent-filter>
-
         </service>
+
+        <activity
+            android:name=".ui.activity.SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
     </application>
 
 </manifest>

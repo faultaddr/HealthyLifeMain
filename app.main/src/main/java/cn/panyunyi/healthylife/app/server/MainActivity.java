@@ -3,10 +3,6 @@ package cn.panyunyi.healthylife.app.server;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Color;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -18,25 +14,23 @@ import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
-
 import com.ecloud.pulltozoomview.PullToZoomListViewEx;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.panyunyi.healthylife.app.main.MyEventBusIndex;
 import cn.panyunyi.healthylife.app.server.event.MessageEvent;
 import cn.panyunyi.healthylife.app.server.ui.activity.MonitorActivity;
+import cn.panyunyi.healthylife.app.server.ui.activity.SettingsActivity;
 import cn.panyunyi.healthylife.app.server.ui.adapter.MainListAdapter;
 import cn.panyunyi.healthylife.app.server.ui.custom.RadarView;
 
+
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public String TAG = "MainActivity";
-
-
 
     @BindView(R.id.main_pic)
     PullToZoomListViewEx pullToZoomListViewEx;
@@ -52,7 +46,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private EventBus eventBus = null;
+    private MainListAdapter adapter;
+    public static String beats;
 
+
+    public static int count = 0;
+    public BeatsCount beatsAvg;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode==0&&resultCode==1){
+            beatsAvg.setValue(data.getStringExtra("beats"));
+            beats=data.getStringExtra("beats");
+            adapter.notifyDataSetChanged();
+        }
+
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -61,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
         /*
         * EventBus
         *
@@ -100,7 +113,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Window window = this.getWindow();
         window.setStatusBarColor(Color.BLACK);
-        pullToZoomListViewEx.setAdapter(new MainListAdapter(MainActivity.this));
+        adapter=new MainListAdapter(MainActivity.this);
+        pullToZoomListViewEx.setAdapter(adapter);
         pullToZoomListViewEx.getPullRootView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -121,10 +135,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.i(TAG,"list item "+i+" was clicked");
                     Intent intent = new Intent();
                     intent.setClass(MainActivity.this, MonitorActivity.class);
-                    startActivity(intent);
+                    startActivityForResult(intent,0);
             }
         });
     }
+
+
+
 
     /**
      * 粘性事件
@@ -133,20 +150,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onDataSynEvent(MessageEvent event) {
         switch (event.getMessageType()){
+            //步数计数器
             case 0:
                 count= Integer.parseInt(event.getMessageContent());
+                adapter.notifyDataSetChanged();
                 break;
+            case 1:
+                String s=event.getMessageContent();
+                Log.i(TAG,s+"");
+                beats=s;
+
+                break;
+
         }
     }
 
-    public static int count = 0;
-
-
+    public interface BeatsCount{
+        public void setValue(String s);
+    }
+    public void setBeatsAvg(BeatsCount count){
+        this.beatsAvg=count;
+    }
 
 
     protected void onResume() {
         super.onResume();
-
     }
 
     protected void onPause() {
@@ -177,7 +205,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 /*
                 * 我的设置等相关
                 * */
+                Intent intent=new Intent();
+                intent.setClass(this, SettingsActivity.class);
+                startActivity(intent);
                 break;
         }
     }
+
 }

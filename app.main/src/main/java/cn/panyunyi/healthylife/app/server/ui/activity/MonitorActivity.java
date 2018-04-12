@@ -11,17 +11,20 @@ import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
+import org.greenrobot.eventbus.EventBus;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
 import android.hardware.Camera;
 import android.hardware.Camera.PreviewCallback;
+import android.inputmethodservice.KeyboardView;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,12 +37,14 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import cn.panyunyi.healthylife.app.server.R;
+import cn.panyunyi.healthylife.app.server.event.MessageEvent;
 import cn.panyunyi.healthylife.app.server.util.ImageProcessing;
 
 
@@ -47,7 +52,7 @@ import cn.panyunyi.healthylife.app.server.util.ImageProcessing;
  * Created by panyu on 2018/3/25.
  */
 
-public class MonitorActivity extends Activity{
+public class MonitorActivity extends Activity {
 
 
     private static final int REQUEST_CALL_CAMERA = 0;
@@ -123,6 +128,14 @@ public class MonitorActivity extends Activity{
     private static double beats = 0;
     //开始时间
     private static long startTime = 0;
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent=new Intent();
+        intent.putExtra("beats",beatsAvg);
+        setResult(1,intent);
+        finish();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -406,6 +419,7 @@ public class MonitorActivity extends Activity{
         }
     }
 
+    private static int beatsAvg;
     /**
      * 相机预览方法
      * 这个方法中实现动态更新界面UI的功能，
@@ -493,9 +507,12 @@ public class MonitorActivity extends Activity{
                         beatsArrayCnt++;
                     }
                 }
-                int beatsAvg = (beatsArrayAvg / beatsArrayCnt);
+                beatsAvg = (beatsArrayAvg / beatsArrayCnt);
                 text.setText("您的的心率是" + String.valueOf(beatsAvg) + "  zhi:" + String.valueOf(beatsArray.length)
                         + "    " + String.valueOf(beatsIndex) + "    " + String.valueOf(beatsArrayAvg) + "    " + String.valueOf(beatsArrayCnt));
+                EventBus eventBus=EventBus.getDefault();
+                MessageEvent event=new MessageEvent(1,String.valueOf(beatsAvg));
+                eventBus.postSticky(event);
                 //获取系统时间（ms）
                 startTime = System.currentTimeMillis();
                 beats = 0;
@@ -567,4 +584,7 @@ public class MonitorActivity extends Activity{
         }
         return result;
     }
+
+
+
 }
