@@ -2,12 +2,14 @@ package cn.panyunyi.healthylife.app.server.ui.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,19 +30,25 @@ import java.util.List;
 import cn.panyunyi.healthylife.app.server.MainActivity;
 import cn.panyunyi.healthylife.app.server.R;
 import cn.panyunyi.healthylife.app.server.db.DataBaseOpenHelper;
+import cn.panyunyi.healthylife.app.server.ui.activity.MonitorActivity;
 import cn.panyunyi.healthylife.app.server.util.TimeUtil;
 
 /**
  * Created by panyunyi on 2018/2/10.
  */
 
-public class MainListAdapter extends BaseAdapter {
+public class MainListAdapter extends BaseAdapter implements MainActivity.StepCount,MainActivity.BeatsCount{
 
     private Context mContext;
     private int typeFlag = 0;
     private MainActivity.BeatsCount beatsAvg;
     int s[] = {R.string.heart_rate, R.string.step_count, R.string.blood_pressure, R.string.blood_oxygen};
     int d[] = { R.drawable.heart,R.drawable.lamp, R.drawable.heart_pressure, R.drawable.oxygen};
+    private  String descriptionStr;
+
+    private String TAG="MainListAdapter";
+    boolean hasCalled=false;
+
 
     public MainListAdapter(Context context) {
         mContext = context;
@@ -57,15 +65,6 @@ public class MainListAdapter extends BaseAdapter {
         return false;
     }
 
-    @Override
-    public void registerDataSetObserver(DataSetObserver dataSetObserver) {
-
-    }
-
-    @Override
-    public void unregisterDataSetObserver(DataSetObserver dataSetObserver) {
-
-    }
 
     @Override
     public int getCount() {
@@ -90,17 +89,72 @@ public class MainListAdapter extends BaseAdapter {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
+        Log.i(TAG,"getview start");
+
+
         LayoutInflater inflater = LayoutInflater.from(mContext);
         view = inflater.inflate(R.layout.main_page_list_item, null);
+
         switch (i) {
+            case 0: {
+                TextView title = (TextView) view.findViewById(R.id.main_list_item_text);
+                TextView date = view.findViewById(R.id.date);
+                final TextView description = view.findViewById(R.id.detail);
+                final TextView unit = view.findViewById(R.id.unit);
+                date.setVisibility(View.VISIBLE);
+                date.setText(TimeUtil.getCurrentDate());
+
+
+                ((MainActivity) mContext).setBeatsAvg(new MainActivity.BeatsCount() {
+                    @Override
+                    public void setValue(String s) {
+                        Log.i(TAG,"description is "+s);
+                        description.setText(s);
+                        descriptionStr=s;
+                        unit.setText("/ 分钟");
+
+                    }
+                });
+                /*
+                * 判断是否测量过心率
+                */
+                if(!hasCalled) {
+                    unit.setText("现在去测量");
+                    unit.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent=new Intent();
+                            intent.setClass(mContext, MonitorActivity.class);
+                            ((MainActivity) mContext).startActivityForResult(intent,0);
+                        }
+                    });
+
+                }
+
+                title.setText(mContext.getText(s[i]));
+                title.setTextSize(16);
+                Drawable drawable = mContext.getDrawable(d[i]);
+                drawable.setBounds(20, 0, 80, 60);
+                title.setCompoundDrawables(drawable, null, null, null);
+                view.setTag(i);
+            }
+                break;
             case 1: {
                 TextView title = (TextView) view.findViewById(R.id.main_list_item_text);
                 TextView date = view.findViewById(R.id.date);
                 final TextView description = view.findViewById(R.id.detail);
                 date.setVisibility(View.VISIBLE);
                 date.setText(TimeUtil.getCurrentDate());
-                description.setText(MainActivity.count + "");
+                ((MainActivity) mContext).setStepCount(new MainActivity.StepCount() {
+                    @Override
+                    public void onStepChanged(String s) {
+                        Log.i(TAG,"onStepChanged"+s);
+                        description.setText(s);
 
+                    }
+                });
+                TextView unit = view.findViewById(R.id.unit);
+                unit.setText(" 步");
 
                 LineChart chart = view.findViewById(R.id.chart);
                 chart.setVisibility(View.VISIBLE);
@@ -113,25 +167,16 @@ public class MainListAdapter extends BaseAdapter {
                 view.setTag(i);
             }
             break;
-            case 0:
+
             case 2:
             case 3:
+
                 TextView title = (TextView) view.findViewById(R.id.main_list_item_text);
                 TextView date = view.findViewById(R.id.date);
                 final TextView description = view.findViewById(R.id.detail);
-                TextView unit=view.findViewById(R.id.unit);
                 date.setVisibility(View.VISIBLE);
                 date.setText(TimeUtil.getCurrentDate());
-
-                unit.setVisibility(View.GONE);
-                ((MainActivity)mContext).setBeatsAvg(new MainActivity.BeatsCount() {
-                    @Override
-                    public void setValue(String s) {
-                        description.setText(s);
-                    }
-                });
-                description.setText(MainActivity.beats);
-
+                TextView unit = view.findViewById(R.id.unit);
                 title.setText(mContext.getText(s[i]));
                 title.setTextSize(16);
                 Drawable drawable = mContext.getDrawable(d[i]);
@@ -143,6 +188,8 @@ public class MainListAdapter extends BaseAdapter {
         }
         return view;
     }
+
+
 
     private void initChartData(int i, Object t) {
         switch (i) {
@@ -226,5 +273,14 @@ public class MainListAdapter extends BaseAdapter {
     }
 
 
+    @Override
+    public void setValue(String s) {
+
+    }
+
+    @Override
+    public void onStepChanged(String s) {
+
+    }
 }
 

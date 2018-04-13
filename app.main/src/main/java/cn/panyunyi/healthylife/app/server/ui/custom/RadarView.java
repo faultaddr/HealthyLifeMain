@@ -21,10 +21,15 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.InputStream;
 
 import cn.panyunyi.healthylife.app.server.MainActivity;
 import cn.panyunyi.healthylife.app.server.R;
+import cn.panyunyi.healthylife.app.server.event.MessageEvent;
 
 
 /**
@@ -57,6 +62,8 @@ public class RadarView extends View {
 
     private String stepCount;
 
+    private Context mContext;
+
     //雷达扫描时候的起始和终止颜色
     private int startColor = 0x0000ff00;
     private int endColor = 0xaa00ff00;
@@ -79,6 +86,7 @@ public class RadarView extends View {
 
     public RadarView(Context context, ViewConfig config) {
         super(context);
+        this.mContext = context;
         this.startColor = config.startColor;
         this.endColor = config.endColor;
         this.mRadarBgColor = config.bgColor;
@@ -87,7 +95,21 @@ public class RadarView extends View {
         isConfig = true;
         setParams();
         initPaint();
+        stepCount="0";
+        EventBus.getDefault().register(this);
 
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onDataSynEvent(MessageEvent event) {
+        switch (event.getMessageType()) {
+            //步数计数器
+            case 0:
+                int step = Integer.parseInt(event.getMessageContent());
+                Log.i(TAG, "step count is" + step);
+                stepCount=step+"";
+                break;
+        }
     }
 
     public RadarView(Context context, @Nullable AttributeSet attrs) {
@@ -104,6 +126,7 @@ public class RadarView extends View {
 
     //初始化，拓展可设置参数供布局使用
     private void init(Context context, AttributeSet attrs) {
+        this.mContext = context;
         if (attrs != null) {
             TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.RadarView);
             startColor = ta.getColor(R.styleable.RadarView_startColor, startColor);
@@ -119,7 +142,7 @@ public class RadarView extends View {
         mRadarPaint = new Paint(Paint.ANTI_ALIAS_FLAG);     //设置抗锯齿
         mRadarPaint.setColor(mRadarLineColor);                  //画笔颜色
         mRadarPaint.setStyle(Paint.Style.STROKE);           //设置空心的画笔，只画圆边
-        mRadarPaint.setStrokeWidth((float)0.3);                      //画笔宽度
+        mRadarPaint.setStrokeWidth((float) 0.3);                      //画笔宽度
 
 
         mRadarBg = new Paint(Paint.ANTI_ALIAS_FLAG);     //设置抗锯齿
@@ -193,19 +216,18 @@ public class RadarView extends View {
         Rect mSrcRect = new Rect(0, 0, mBitmap.getWidth(), mBitmap.getHeight());
         RectF mDestRect = new RectF(0, 0, getMeasuredWidth(), getMeasuredHeight());
         canvas.drawBitmap(mBitmap, mSrcRect, mDestRect, mRadarPaint);
-        Paint textPaint =new Paint();
+        Paint textPaint = new Paint();
         textPaint.setAntiAlias(true);
         textPaint.setColor(Color.WHITE);
         textPaint.setFakeBoldText(true);
         textPaint.setStyle(Paint.Style.STROKE);
-        textPaint.setTextSize((float)80.0);
+        textPaint.setTextSize((float) 80.0);
 
-        stepCount= MainActivity.count+"";
-        canvas.drawText(stepCount,mRadarRadius-textPaint.measureText(stepCount)/2,mRadarRadius / 2,textPaint);
-        textPaint.setTextSize((float)40.0);
-        String s=MainActivity.count*0.5+"m|0K";
+        canvas.drawText(stepCount, mRadarRadius - textPaint.measureText(stepCount) / 2, mRadarRadius / 2, textPaint);
+        textPaint.setTextSize((float) 40.0);
+        String s = Integer.parseInt(stepCount) + "m|0K";
         ;
-        canvas.drawText(s,mRadarRadius-textPaint.measureText(s)/2,mRadarRadius / 2+80,textPaint);
+        canvas.drawText(s, mRadarRadius - textPaint.measureText(s) / 2, mRadarRadius / 2 + 80, textPaint);
 
 
         canvas.translate(mRadarRadius, mRadarRadius / 2);
@@ -241,7 +263,6 @@ public class RadarView extends View {
     public void stopScan() {
         mHandler.removeMessages(MSG_WHAT);
     }
-
 
 
     public static class ViewConfig {

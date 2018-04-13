@@ -14,10 +14,13 @@ import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
+
 import com.ecloud.pulltozoomview.PullToZoomListViewEx;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.panyunyi.healthylife.app.main.MyEventBusIndex;
@@ -26,7 +29,6 @@ import cn.panyunyi.healthylife.app.server.ui.activity.MonitorActivity;
 import cn.panyunyi.healthylife.app.server.ui.activity.SettingsActivity;
 import cn.panyunyi.healthylife.app.server.ui.adapter.MainListAdapter;
 import cn.panyunyi.healthylife.app.server.ui.custom.RadarView;
-
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -44,25 +46,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     LinearLayout mMainPage;
 
 
-
     private EventBus eventBus = null;
     private MainListAdapter adapter;
     public static String beats;
 
 
-    public static int count = 0;
     public BeatsCount beatsAvg;
+    public StepCount stepCount;
+    public  MainActivity(){
+
+    }
+    public MainActivity(BeatsCount beatsCount){
+        this.beatsAvg=beatsCount;
+    }
+    public MainActivity(StepCount stepCount){
+        this.stepCount=stepCount;
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode==0&&resultCode==1){
-            beatsAvg.setValue(data.getStringExtra("beats"));
-            beats=data.getStringExtra("beats");
-            adapter.notifyDataSetChanged();
-        }
-
-
         super.onActivityResult(requestCode, resultCode, data);
+        beats = data.getStringExtra("beats");
+        beatsAvg.setValue(data.getStringExtra("beats"));
+        Log.i(TAG, beats + "");
+
+
 
     }
 
@@ -75,9 +84,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ButterKnife.bind(this);
 
         /*
-        * EventBus
-        *
-        * */
+         * EventBus
+         *
+         * */
         EventBus.builder().addIndex(new MyEventBusIndex()).installDefaultEventBus();
 // Now the default instance uses the given index. Use it like this:
         eventBus = EventBus.getDefault();
@@ -113,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Window window = this.getWindow();
         window.setStatusBarColor(Color.BLACK);
-        adapter=new MainListAdapter(MainActivity.this);
+        adapter = new MainListAdapter(MainActivity.this);
         pullToZoomListViewEx.setAdapter(adapter);
         pullToZoomListViewEx.getPullRootView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -132,44 +141,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         pullToZoomListViewEx.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.i(TAG,"list item "+i+" was clicked");
-                    Intent intent = new Intent();
-                    intent.setClass(MainActivity.this, MonitorActivity.class);
-                    startActivityForResult(intent,0);
+                Log.i(TAG, "list item " + i + " was clicked");
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, MonitorActivity.class);
+                startActivityForResult(intent, 0);
             }
         });
+
     }
-
-
 
 
     /**
      * 粘性事件
+     *
      * @param event
      */
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onDataSynEvent(MessageEvent event) {
-        switch (event.getMessageType()){
+        switch (event.getMessageType()) {
             //步数计数器
             case 0:
-                count= Integer.parseInt(event.getMessageContent());
-                adapter.notifyDataSetChanged();
+                int step = Integer.parseInt(event.getMessageContent());
+                Log.i(TAG,"step count is" +step);
+                if(stepCount!=null)
+                    stepCount.onStepChanged(String.valueOf(step));
                 break;
             case 1:
-                String s=event.getMessageContent();
-                Log.i(TAG,s+"");
-                beats=s;
+/*                String s = event.getMessageContent();
+
+                beats = s;*/
 
                 break;
 
         }
     }
 
-    public interface BeatsCount{
+    public interface BeatsCount {
         public void setValue(String s);
     }
-    public void setBeatsAvg(BeatsCount count){
-        this.beatsAvg=count;
+
+    public void setBeatsAvg(BeatsCount count) {
+        this.beatsAvg = count;
+    }
+
+    public interface StepCount{
+        public void onStepChanged(String s);
+    }
+    public void setStepCount(StepCount count){
+        this.stepCount=count;
     }
 
 
@@ -184,32 +203,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.main_page:
                 /*
-                * 跳转到主页面
-                * */
+                 * 跳转到主页面
+                 * */
                 break;
             case R.id.sports:
                 /*
-                * 跳转到运动页面
-                * */
+                 * 跳转到运动页面
+                 * */
                 break;
             case R.id.find:
                 /*
-                *
-                * 推荐相关信息
-                * */
+                 *
+                 * 推荐相关信息
+                 * */
                 break;
             case R.id.mine:
                 /*
-                * 我的设置等相关
-                * */
-                Intent intent=new Intent();
+                 * 我的设置等相关
+                 * */
+                Intent intent = new Intent();
                 intent.setClass(this, SettingsActivity.class);
                 startActivity(intent);
                 break;
         }
     }
+
 
 }

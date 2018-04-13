@@ -35,6 +35,7 @@ import android.os.PowerManager.WakeLock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -128,13 +129,20 @@ public class MonitorActivity extends Activity {
     private static double beats = 0;
     //开始时间
     private static long startTime = 0;
+
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent intent=new Intent();
-        intent.putExtra("beats",beatsAvg);
-        setResult(1,intent);
-        finish();
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            Intent intent=new Intent();
+            intent.putExtra("beats",String.valueOf(beatsAvg));
+            setResult(1,intent);
+            task.cancel();
+            finish();
+            return false;
+        }else {
+            return super.onKeyDown(keyCode, event);
+        }
+
     }
 
     @Override
