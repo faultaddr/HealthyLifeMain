@@ -1,7 +1,10 @@
 package cn.panyunyi.healthylife.app.server.ui.activity;
 
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.achartengine.ChartFactory;
@@ -70,7 +73,6 @@ public class MonitorActivity extends Activity {
     private static int j;
 
     private static double flag = 1;
-    private Handler handler;
     private String title = "pulse";
     private XYSeries series;
     private XYMultipleSeriesDataset mDataset;
@@ -99,7 +101,7 @@ public class MonitorActivity extends Activity {
     private static int averageIndex = 0;
     private static final int averageArraySize = 4;
     private static final int[] averageArray = new int[averageArraySize];
-    private final static String TAG="MonitorActivity";
+    private final static String TAG = "MonitorActivity";
 
     /**
      * 类型枚举
@@ -130,16 +132,29 @@ public class MonitorActivity extends Activity {
     //开始时间
     private static long startTime = 0;
 
+    //这里的Handler实例将配合下面的Timer实例，完成定时更新图表的功能
+    @SuppressLint("HandlerLeak")
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+                //        		刷新图表
+                updateChart();
+
+        }
+    };
+    private CountDownLatch requestPemission = new CountDownLatch(1);
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            Intent intent=new Intent();
-            intent.putExtra("beats",String.valueOf(beatsAvg));
-            setResult(1,intent);
+            Intent intent = new Intent();
+            intent.putExtra("beats", String.valueOf(beatsAvg));
+            setResult(1, intent);
             task.cancel();
             finish();
             return false;
-        }else {
+        } else {
             return super.onKeyDown(keyCode, event);
         }
 
@@ -150,12 +165,31 @@ public class MonitorActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_monitor);
         initConfig();
-        requestPermission();
+        initView();
+        camera=Camera.open();
+
+
+
+    }
+
+    private void initView() {
+        //获取SurfaceView控件
+        preview = (SurfaceView) findViewById(R.id.preview);
+        previewHolder = preview.getHolder();
+        previewHolder.addCallback(surfaceCallback);
+        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        //		image = findViewById(R.id.image);
+        text = (TextView) findViewById(R.id.text);
+        text1 = (TextView) findViewById(R.id.text1);
+        text2 = (TextView) findViewById(R.id.text2);
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "DoNotDimScreen");
     }
 
     /**
      * 初始化配置
      */
+    @SuppressLint("HandlerLeak")
     private void initConfig() {
         //曲线
         context = getApplicationContext();
@@ -186,15 +220,7 @@ public class MonitorActivity extends Activity {
         //将图表添加到布局中去
         layout.addView(chart, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 
-        //这里的Handler实例将配合下面的Timer实例，完成定时更新图表的功能
-        handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                //        		刷新图表
-                updateChart();
-                super.handleMessage(msg);
-            }
-        };
+
 
         task = new TimerTask() {
             @Override
@@ -206,17 +232,7 @@ public class MonitorActivity extends Activity {
         };
 
         timer.schedule(task, 1, 20);           //曲线
-        //获取SurfaceView控件
-        preview = (SurfaceView) findViewById(R.id.preview);
-        previewHolder = preview.getHolder();
-        previewHolder.addCallback(surfaceCallback);
-        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        //		image = findViewById(R.id.image);
-        text = (TextView) findViewById(R.id.text);
-        text1 = (TextView) findViewById(R.id.text1);
-        text2 = (TextView) findViewById(R.id.text2);
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "DoNotDimScreen");
+
     }
 
     //	曲线
@@ -358,74 +374,38 @@ public class MonitorActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        wakeLock.acquire();
-        try{
-            requestPermission();
-        }catch (Exception e){
-            Log.i("MonitorActivity", e.getMessage());
+        try {
+            if(wakeLock!=null)
+                wakeLock.acquire();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         startTime = System.currentTimeMillis();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        wakeLock.release();
         try {
-            camera.setPreviewCallback(null);
-            camera.stopPreview();
-            camera.release();
-            camera = null;
-        }catch (Exception e){
-            Log.e(TAG,e.getMessage());
+            if(wakeLock!=null)
+                wakeLock.release();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
-    /**
-     * 注册权限申请回调
-     * @param requestCode 申请码
-     * @param permissions 申请的权限
-     * @param grantResults 结果
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
-    {
-        switch (requestCode) {
-            case REQUEST_CALL_CAMERA:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    camera=Camera.open();
-                }
-                else {
-                    // Permission Denied
-                    Toast.makeText(MonitorActivity.this, "CALL_PHONE Denied", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        try {
+            if (camera != null) {
+                camera.setPreviewCallback(null);
+                camera.stopPreview();
+                camera.release();
+                camera = null;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
         }
     }
 
-    /*
-    * android 6.0+
-    * 相机权限需要动态获取
-    *
-    *
-    *
-    * */
-    private void requestPermission() {
-        //判断Android版本是否大于23
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int checkCallPhonePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
-            if (checkCallPhonePermission != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CALL_CAMERA);
-                return;
-            } else {
-                //已有权限
-                camera=Camera.open();
-            }
-        } else {
-            //API 版本在23以下
-        }
-    }
+
 
     private static int beatsAvg;
     /**
@@ -518,8 +498,8 @@ public class MonitorActivity extends Activity {
                 beatsAvg = (beatsArrayAvg / beatsArrayCnt);
                 text.setText("您的的心率是" + String.valueOf(beatsAvg) + "  zhi:" + String.valueOf(beatsArray.length)
                         + "    " + String.valueOf(beatsIndex) + "    " + String.valueOf(beatsArrayAvg) + "    " + String.valueOf(beatsArrayCnt));
-                EventBus eventBus=EventBus.getDefault();
-                MessageEvent event=new MessageEvent(1,String.valueOf(beatsAvg));
+                EventBus eventBus = EventBus.getDefault();
+                MessageEvent event = new MessageEvent(1, String.valueOf(beatsAvg));
                 eventBus.postSticky(event);
                 //获取系统时间（ms）
                 startTime = System.currentTimeMillis();
@@ -592,7 +572,6 @@ public class MonitorActivity extends Activity {
         }
         return result;
     }
-
 
 
 }

@@ -58,7 +58,6 @@ public class AidlTestActivity extends AppCompatActivity {
             AppDetailInfo appDetailInfo = mService.getAppDetailInfo("abc");
             end = System.currentTimeMillis();
             int index = 0;
-
         } catch (RemoteException e) {
             e.printStackTrace();
         }

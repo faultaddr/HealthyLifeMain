@@ -1,11 +1,17 @@
 package cn.panyunyi.healthylife.app.server;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -14,6 +20,7 @@ import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.ecloud.pulltozoomview.PullToZoomListViewEx;
 
@@ -26,7 +33,6 @@ import butterknife.ButterKnife;
 import cn.panyunyi.healthylife.app.main.MyEventBusIndex;
 import cn.panyunyi.healthylife.app.server.event.MessageEvent;
 import cn.panyunyi.healthylife.app.server.ui.activity.MonitorActivity;
-import cn.panyunyi.healthylife.app.server.ui.activity.SettingsActivity;
 import cn.panyunyi.healthylife.app.server.ui.adapter.MainListAdapter;
 import cn.panyunyi.healthylife.app.server.ui.custom.RadarView;
 
@@ -48,29 +54,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private EventBus eventBus = null;
     private MainListAdapter adapter;
-    public static String beats;
+    public String beats = "";
+    public String steps = "";
+    private final int REQUEST_CALL_CAMERA=0;
 
 
-    public BeatsCount beatsAvg;
-    public StepCount stepCount;
-    public  MainActivity(){
+    public MainActivity() {
 
-    }
-    public MainActivity(BeatsCount beatsCount){
-        this.beatsAvg=beatsCount;
-    }
-    public MainActivity(StepCount stepCount){
-        this.stepCount=stepCount;
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        beats = data.getStringExtra("beats");
-        beatsAvg.setValue(data.getStringExtra("beats"));
+        if(data!=null) {
+            beats = data.getStringExtra("beats");
+            adapter.notifyDataSetChanged();
+        }
         Log.i(TAG, beats + "");
-
 
 
     }
@@ -91,10 +92,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 // Now the default instance uses the given index. Use it like this:
         eventBus = EventBus.getDefault();
         eventBus.register(this);
-
+        initAdapter();
         initMainView();
         initOtherView();
 
+    }
+
+    private void initAdapter() {
+        adapter = new MainListAdapter(this);
+        adapter.setBeats(beats);
+        adapter.setSteps(steps);
+        adapter.notifyDataSetChanged();
+        adapter.setOnClickItemView(new MainListAdapter.onClickItemView() {
+            @Override
+            public void itemViewClicked(int id) {
+                //TODO item 的点击事件分发到这里
+            }
+        });
     }
 
     private void initOtherView() {
@@ -124,12 +138,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         window.setStatusBarColor(Color.BLACK);
         adapter = new MainListAdapter(MainActivity.this);
         pullToZoomListViewEx.setAdapter(adapter);
-        pullToZoomListViewEx.getPullRootView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(TAG, "position = " + position);
-            }
-        });
+
+
+
 
 
         DisplayMetrics localDisplayMetrics = new DisplayMetrics();
@@ -142,14 +153,74 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.i(TAG, "list item " + i + " was clicked");
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, MonitorActivity.class);
-                startActivityForResult(intent, 0);
+                if(requestPermission()==1) {
+                    startMonitorActivity();
+                }
             }
         });
 
     }
 
+    /*
+    * start monitorActivity
+    * */
+    public void startMonitorActivity(){
+        Intent intent = new Intent();
+        intent.setClass(MainActivity.this, MonitorActivity.class);
+        startActivityForResult(intent, 0);
+    }
+
+    /**
+     * 注册权限申请回调
+     *
+     * @param requestCode  申请码
+     * @param permissions  申请的权限
+     * @param grantResults 结果
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CALL_CAMERA:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startMonitorActivity();
+                } else {
+                    // Permission Denied
+                    Toast.makeText(MainActivity.this, "CALL_PHONE Denied", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                break;
+        }
+
+    }
+
+    /*
+     * android 6.0+
+     * 相机权限需要动态获取
+     *
+     *
+     *
+     * */
+    private int requestPermission() {
+        //判断Android版本是否大于23
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int checkCallPhonePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+            if (checkCallPhonePermission != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, REQUEST_CALL_CAMERA);
+                return 0;
+            } else {
+                //已有权限
+                return 1;
+            }
+
+        } else {
+            //API 版本在23以下
+            return 1;
+        }
+
+    }
 
     /**
      * 粘性事件
@@ -161,34 +232,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (event.getMessageType()) {
             //步数计数器
             case 0:
-                int step = Integer.parseInt(event.getMessageContent());
-                Log.i(TAG,"step count is" +step);
-                if(stepCount!=null)
-                    stepCount.onStepChanged(String.valueOf(step));
+                steps = event.getMessageContent();
+                Log.i(TAG, "step count is" + steps);
+                adapter.setSteps(steps);
+                adapter.notifyDataSetChanged();
                 break;
             case 1:
-/*                String s = event.getMessageContent();
-
-                beats = s;*/
+                beats = event.getMessageContent();
+                Log.i(TAG, "beats is" + beats);
+                adapter.setBeats(beats);
+                adapter.notifyDataSetChanged();
 
                 break;
 
         }
-    }
-
-    public interface BeatsCount {
-        public void setValue(String s);
-    }
-
-    public void setBeatsAvg(BeatsCount count) {
-        this.beatsAvg = count;
-    }
-
-    public interface StepCount{
-        public void onStepChanged(String s);
-    }
-    public void setStepCount(StepCount count){
-        this.stepCount=count;
     }
 
 
@@ -224,9 +281,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 /*
                  * 我的设置等相关
                  * */
-                Intent intent = new Intent();
-                intent.setClass(this, SettingsActivity.class);
-                startActivity(intent);
+
                 break;
         }
     }

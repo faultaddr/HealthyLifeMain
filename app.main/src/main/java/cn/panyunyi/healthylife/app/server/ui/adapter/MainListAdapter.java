@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -18,11 +17,9 @@ import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,21 +34,36 @@ import cn.panyunyi.healthylife.app.server.util.TimeUtil;
  * Created by panyunyi on 2018/2/10.
  */
 
-public class MainListAdapter extends BaseAdapter implements MainActivity.StepCount,MainActivity.BeatsCount{
+public class MainListAdapter extends BaseAdapter {
 
     private Context mContext;
     private int typeFlag = 0;
-    private MainActivity.BeatsCount beatsAvg;
     int s[] = {R.string.heart_rate, R.string.step_count, R.string.blood_pressure, R.string.blood_oxygen};
-    int d[] = { R.drawable.heart,R.drawable.lamp, R.drawable.heart_pressure, R.drawable.oxygen};
-    private  String descriptionStr;
+    int d[] = {R.drawable.heart, R.drawable.lamp, R.drawable.heart_pressure, R.drawable.oxygen};
+    private String beats = "";
+    private String steps = "";
+    private onClickItemView itemView;
+    private String TAG = "MainListAdapter";
 
-    private String TAG="MainListAdapter";
-    boolean hasCalled=false;
+    public void setBeats(String beatsAvg) {
+        this.beats = beatsAvg;
+        this.notifyDataSetChanged();
+    }
 
+    public void setSteps(String stepsCount) {
+        steps = stepsCount;
+        notifyDataSetChanged();
+    }
 
     public MainListAdapter(Context context) {
         mContext = context;
+    }
+    //接口回调
+    public interface onClickItemView{
+        public void itemViewClicked(int id);
+    }
+    public void setOnClickItemView(onClickItemView onClickMyTextView) {
+        this.itemView = onClickMyTextView;
     }
 
 
@@ -89,48 +101,46 @@ public class MainListAdapter extends BaseAdapter implements MainActivity.StepCou
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        Log.i(TAG,"getview start");
-
-
+        Log.i(TAG, "getview start");
+        Log.i(TAG, "beats is" + beats);
+        Log.i(TAG, "steps is" + steps);
+        final int  position =i;
         LayoutInflater inflater = LayoutInflater.from(mContext);
         view = inflater.inflate(R.layout.main_page_list_item, null);
-
+        if(itemView!=null){
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    itemView.itemViewClicked(position);
+                }
+            });
+        }
         switch (i) {
             case 0: {
-                TextView title = (TextView) view.findViewById(R.id.main_list_item_text);
+                TextView title = view.findViewById(R.id.main_list_item_text);
                 TextView date = view.findViewById(R.id.date);
-                final TextView description = view.findViewById(R.id.detail);
-                final TextView unit = view.findViewById(R.id.unit);
+                TextView description = view.findViewById(R.id.detail);
+                TextView unit = view.findViewById(R.id.unit);
                 date.setVisibility(View.VISIBLE);
                 date.setText(TimeUtil.getCurrentDate());
 
-
-                ((MainActivity) mContext).setBeatsAvg(new MainActivity.BeatsCount() {
-                    @Override
-                    public void setValue(String s) {
-                        Log.i(TAG,"description is "+s);
-                        description.setText(s);
-                        descriptionStr=s;
-                        unit.setText("/ 分钟");
-
-                    }
-                });
                 /*
-                * 判断是否测量过心率
-                */
-                if(!hasCalled) {
+                 * 判断是否测量过心率
+                 */
+                if (beats.equals("")) {
                     unit.setText("现在去测量");
                     unit.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent=new Intent();
+                            Intent intent = new Intent();
                             intent.setClass(mContext, MonitorActivity.class);
-                            ((MainActivity) mContext).startActivityForResult(intent,0);
+                            ((MainActivity) mContext).startActivityForResult(intent, 0);
                         }
                     });
-
+                } else {
+                    description.setText(beats);
+                    unit.setText(" /分钟");
                 }
-
                 title.setText(mContext.getText(s[i]));
                 title.setTextSize(16);
                 Drawable drawable = mContext.getDrawable(d[i]);
@@ -138,24 +148,21 @@ public class MainListAdapter extends BaseAdapter implements MainActivity.StepCou
                 title.setCompoundDrawables(drawable, null, null, null);
                 view.setTag(i);
             }
-                break;
+            break;
             case 1: {
                 TextView title = (TextView) view.findViewById(R.id.main_list_item_text);
                 TextView date = view.findViewById(R.id.date);
-                final TextView description = view.findViewById(R.id.detail);
+                TextView description = view.findViewById(R.id.detail);
                 date.setVisibility(View.VISIBLE);
                 date.setText(TimeUtil.getCurrentDate());
-                ((MainActivity) mContext).setStepCount(new MainActivity.StepCount() {
-                    @Override
-                    public void onStepChanged(String s) {
-                        Log.i(TAG,"onStepChanged"+s);
-                        description.setText(s);
-
-                    }
-                });
                 TextView unit = view.findViewById(R.id.unit);
-                unit.setText(" 步");
-
+                if (steps.equals("")) {
+                    unit.setVisibility(View.INVISIBLE);
+                } else {
+                    unit.setVisibility(View.VISIBLE);
+                    description.setText(steps);
+                    unit.setText(" 步");
+                }
                 LineChart chart = view.findViewById(R.id.chart);
                 chart.setVisibility(View.VISIBLE);
                 initChartData(i, chart);
@@ -177,6 +184,7 @@ public class MainListAdapter extends BaseAdapter implements MainActivity.StepCou
                 date.setVisibility(View.VISIBLE);
                 date.setText(TimeUtil.getCurrentDate());
                 TextView unit = view.findViewById(R.id.unit);
+                unit.setVisibility(View.INVISIBLE);
                 title.setText(mContext.getText(s[i]));
                 title.setTextSize(16);
                 Drawable drawable = mContext.getDrawable(d[i]);
@@ -188,7 +196,6 @@ public class MainListAdapter extends BaseAdapter implements MainActivity.StepCou
         }
         return view;
     }
-
 
 
     private void initChartData(int i, Object t) {
@@ -273,14 +280,5 @@ public class MainListAdapter extends BaseAdapter implements MainActivity.StepCou
     }
 
 
-    @Override
-    public void setValue(String s) {
-
-    }
-
-    @Override
-    public void onStepChanged(String s) {
-
-    }
 }
 
