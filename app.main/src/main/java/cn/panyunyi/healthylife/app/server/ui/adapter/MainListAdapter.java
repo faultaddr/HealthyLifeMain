@@ -223,10 +223,6 @@ public class MainListAdapter extends BaseAdapter {
                     date.add(cursor.getString(datePos));
                     count++;
                 }
-                entries.add(new Entry(1f, 1500f));
-                entries.add(new Entry(2f, 1600f));
-                entries.add(new Entry(3f, 2000f));
-                date.add(123 + "");
                 if (entries.size() != 0) {
                     LineDataSet dataSet = new LineDataSet(entries, "步数"); // add entries to dataset..
                     dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);

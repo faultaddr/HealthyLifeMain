@@ -36,7 +36,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".AidlTestActivity"></activity>
+        <activity android:name=".AidlTestActivity" />
 
         <service
             android:name=".biz.local.service.StepService"
@@ -47,6 +47,7 @@
             </intent-filter>
         </service>
 
+        <activity android:name=".ui.activity.DetailActivity"></activity>
     </application>
 
 </manifest>

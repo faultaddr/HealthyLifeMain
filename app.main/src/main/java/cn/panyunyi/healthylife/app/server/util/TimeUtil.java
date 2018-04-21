@@ -6,8 +6,13 @@ import java.util.Date;
 
 public class TimeUtil {
     public static String getCurrentDate() {
-        Date d = new Date();
+        Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(d);
+        return sdf.format(date);
+    }
+    public static String getCurrentDateDetail(){
+        Date date=new Date();
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return simpleDateFormat.format(date);
     }
 }

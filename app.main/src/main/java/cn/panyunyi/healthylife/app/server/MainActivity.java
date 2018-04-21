@@ -17,6 +17,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
@@ -32,6 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.panyunyi.healthylife.app.main.MyEventBusIndex;
 import cn.panyunyi.healthylife.app.server.event.MessageEvent;
+import cn.panyunyi.healthylife.app.server.ui.activity.DetailActivity;
 import cn.panyunyi.healthylife.app.server.ui.activity.MonitorActivity;
 import cn.panyunyi.healthylife.app.server.ui.adapter.MainListAdapter;
 import cn.panyunyi.healthylife.app.server.ui.custom.RadarView;
@@ -81,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
@@ -107,6 +111,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void itemViewClicked(int id) {
                 //TODO item 的点击事件分发到这里
+                switch (id) {
+                    case 1:
+                        
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        break;
+                }
             }
         });
     }
@@ -270,6 +285,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 /*
                  * 跳转到运动页面
                  * */
+                Intent intent =new Intent();
+                intent.setClass(this,DetailActivity.class);
+                startActivity(intent);
                 break;
             case R.id.find:
                 /*

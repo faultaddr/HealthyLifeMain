@@ -90,4 +90,5 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="heart_beat_times">/次</string>
+    <string name="history_data">历史数据</string>
 </resources>

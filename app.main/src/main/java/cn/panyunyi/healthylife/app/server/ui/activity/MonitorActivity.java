@@ -21,6 +21,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -47,9 +48,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import cn.panyunyi.healthylife.app.server.MainActivity;
 import cn.panyunyi.healthylife.app.server.R;
+import cn.panyunyi.healthylife.app.server.biz.local.dao.BeatDataDao;
+import cn.panyunyi.healthylife.app.server.biz.local.dao.StepDataDao;
+import cn.panyunyi.healthylife.app.server.biz.local.model.BeatEntity;
+import cn.panyunyi.healthylife.app.server.db.DataBaseOpenHelper;
 import cn.panyunyi.healthylife.app.server.event.MessageEvent;
 import cn.panyunyi.healthylife.app.server.util.ImageProcessing;
+import cn.panyunyi.healthylife.app.server.util.TimeUtil;
 
 
 /**
@@ -58,7 +65,8 @@ import cn.panyunyi.healthylife.app.server.util.ImageProcessing;
 
 public class MonitorActivity extends Activity {
 
-
+    static SharedPreferences preferences;
+    SharedPreferences.Editor editor;
     private static final int REQUEST_CALL_CAMERA = 0;
     /**
      * 程序的主入口
@@ -132,6 +140,8 @@ public class MonitorActivity extends Activity {
     //开始时间
     private static long startTime = 0;
 
+    private static BeatDataDao dao;
+
     //这里的Handler实例将配合下面的Timer实例，完成定时更新图表的功能
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {
@@ -162,14 +172,34 @@ public class MonitorActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_monitor);
+
+        initVariables();
         initConfig();
         initView();
+
         camera=Camera.open();
 
 
 
+    }
+
+    private void initVariables() {
+        context = getApplicationContext();
+        dao=new BeatDataDao(context.getApplicationContext());
+
+        preferences = getSharedPreferences("count",MODE_PRIVATE);
+        //读取SharedPreferences里的count数据，若存在返回其值，否则返回0
+        String count = preferences.getString("count","0");
+        int record=Integer.parseInt(count);
+        editor = preferences.edit();
+        //存入数据
+        editor.putString("count",++record+"");
+        //提交修改
+        editor.commit();
     }
 
     private void initView() {
@@ -192,7 +222,7 @@ public class MonitorActivity extends Activity {
     @SuppressLint("HandlerLeak")
     private void initConfig() {
         //曲线
-        context = getApplicationContext();
+
 
         //这里获得main界面上的布局，下面会把图表画在这个布局里面
         LinearLayout layout = (LinearLayout) findViewById(R.id.linearLayout1);
@@ -414,6 +444,7 @@ public class MonitorActivity extends Activity {
      * 通过获取手机摄像头的参数来实时动态计算平均像素值、脉冲数，从而实时动态计算心率值。
      */
     private static PreviewCallback previewCallback = new PreviewCallback() {
+        @SuppressLint("SetTextI18n")
         public void onPreviewFrame(byte[] data, Camera cam) {
             if (data == null)
                 throw new NullPointerException();
@@ -498,9 +529,20 @@ public class MonitorActivity extends Activity {
                 beatsAvg = (beatsArrayAvg / beatsArrayCnt);
                 text.setText("您的的心率是" + String.valueOf(beatsAvg) + "  zhi:" + String.valueOf(beatsArray.length)
                         + "    " + String.valueOf(beatsIndex) + "    " + String.valueOf(beatsArrayAvg) + "    " + String.valueOf(beatsArrayCnt));
+
+
                 EventBus eventBus = EventBus.getDefault();
                 MessageEvent event = new MessageEvent(1, String.valueOf(beatsAvg));
                 eventBus.postSticky(event);
+                BeatEntity entity=new BeatEntity();
+                Log.i(TAG,preferences.getString("count",null)+"");
+                entity.timeCount=preferences.getString("count",null);
+                entity.currentDate= TimeUtil.getCurrentDateDetail();
+                entity.beats=String.valueOf(beatsAvg);
+                if(entity.timeCount!=null) {
+                    dao.addNewData(entity);
+                }
+
                 //获取系统时间（ms）
                 startTime = System.currentTimeMillis();
                 beats = 0;
