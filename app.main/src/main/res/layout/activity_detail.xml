@@ -9,11 +9,14 @@
     android:padding="8dp"
     android:gravity="center"
     android:text="@string/history_data"
+    android:textColor="#ffffff"
+    android:textSize="20sp"
+    android:background="@drawable/gradient_bg"
     />
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="3dp"
         android:background="#ececec"
 
         >
