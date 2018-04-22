@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cn.panyunyi.healthylife.app.server">
+    package="cn.panyunyi.healthylife.app.main">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -36,7 +36,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".AidlTestActivity" />
 
         <service
             android:name=".biz.local.service.StepService"
@@ -47,7 +46,8 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".ui.activity.DetailActivity"></activity>
+        <activity android:name=".ui.activity.DetailActivity" />
+        <activity android:name=".ui.activity.MineActivity"></activity>
     </application>
 
 </manifest>
