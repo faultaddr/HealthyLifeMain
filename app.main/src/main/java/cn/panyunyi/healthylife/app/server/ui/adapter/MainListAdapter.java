@@ -1,6 +1,5 @@
 package cn.panyunyi.healthylife.app.server.ui.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -20,12 +19,12 @@ import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import cn.panyunyi.healthylife.app.server.MainActivity;
 import cn.panyunyi.healthylife.app.server.R;
+import cn.panyunyi.healthylife.app.server.biz.local.dao.BeatDataDao;
+import cn.panyunyi.healthylife.app.server.biz.local.model.BeatEntity;
 import cn.panyunyi.healthylife.app.server.db.DataBaseOpenHelper;
 import cn.panyunyi.healthylife.app.server.ui.activity.MonitorActivity;
 import cn.panyunyi.healthylife.app.server.util.TimeUtil;
@@ -121,6 +120,7 @@ public class MainListAdapter extends BaseAdapter {
                 TextView date = view.findViewById(R.id.date);
                 TextView description = view.findViewById(R.id.detail);
                 TextView unit = view.findViewById(R.id.unit);
+                LineChart chart=view.findViewById(R.id.chart);
                 date.setVisibility(View.VISIBLE);
                 date.setText(TimeUtil.getCurrentDate());
 
@@ -146,6 +146,8 @@ public class MainListAdapter extends BaseAdapter {
                 Drawable drawable = mContext.getDrawable(d[i]);
                 drawable.setBounds(20, 0, 80, 60);
                 title.setCompoundDrawables(drawable, null, null, null);
+                initChartData(0,chart);
+                chart.setVisibility(View.VISIBLE);
                 view.setTag(i);
             }
             break;
@@ -200,6 +202,47 @@ public class MainListAdapter extends BaseAdapter {
 
     private void initChartData(int i, Object t) {
         switch (i) {
+            case 0: {
+                List<Entry> entries = new ArrayList<>();
+                List<String> index = new ArrayList<>();
+                List<BeatEntity> beatList = BeatDataDao.getInstance(mContext).getAllBeats();
+                int count = 0;
+                if(beatList!=null) {
+                    for (BeatEntity entity : beatList) {
+                        entries.add(new Entry((float) count, (float) Integer.parseInt(entity.beats)));
+                        count++;
+                    }
+
+                    if (entries.size() != 0) {
+                        LineDataSet dataSet = new LineDataSet(entries, "心率");
+                        // add entries to dataset..
+                        dataSet.setCubicIntensity(0.2f);
+                        dataSet.setDrawFilled(true);
+                        dataSet.setDrawCircles(false);
+                        dataSet.setLineWidth(1.8f);
+                        dataSet.setCircleRadius(4f);
+                        dataSet.setCircleColor(Color.BLUE);
+                        dataSet.setHighLightColor(Color.rgb(244, 117, 117));
+                        dataSet.setColor(Color.BLUE);
+                        dataSet.setFillColor(Color.BLUE);
+                        dataSet.setFillAlpha(100);
+                        dataSet.setDrawHorizontalHighlightIndicator(false);
+                        LineData lineData = new LineData(dataSet);
+                        ((LineChart) t).setData(lineData);
+                        ((LineChart) t).animateY(3000);
+                        ((LineChart) t).invalidate(); // refresh
+                        Description description = new Description();
+                        description.setText("心率波动值");
+                        ((LineChart) t).setDescription(description);
+                    }else{
+                        ((LineChart) t).setVisibility(View.GONE);
+                    }
+                }else{
+                    ((LineChart) t).setVisibility(View.GONE);
+                }
+            }
+                break;
+
             case 1:
                 DataBaseOpenHelper helper = DataBaseOpenHelper.getInstance(mContext, "step", 1, null);
                 Cursor cursor = helper.query("step", "");

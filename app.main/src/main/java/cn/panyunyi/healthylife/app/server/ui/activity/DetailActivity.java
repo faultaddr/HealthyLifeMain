@@ -153,7 +153,7 @@ public class DetailActivity extends AppCompatActivity {
         Observable.create(new ObservableOnSubscribe<Map<String,List<BeatEntity>>>() {
             @Override
             public void subscribe(ObservableEmitter<Map<String,List<BeatEntity>>> emitter) throws Exception {
-                BeatDataDao dao = new BeatDataDao(getApplicationContext());
+                BeatDataDao dao = BeatDataDao.getInstance(getApplicationContext());
                 List<BeatEntity> list = dao.getAllBeats();
                 if (list != null) {
                     for (BeatEntity entity : list) {
