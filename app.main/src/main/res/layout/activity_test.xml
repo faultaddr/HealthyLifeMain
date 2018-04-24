@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="cn.panyunyi.healthylife.app.server.TestActivity">
+
+    <cn.panyunyi.healthylife.app.server.ui.custom.RadarView
+        android:id="@+id/gradientDemo"
+        android:layout_width="247dp"
+        android:layout_height="247dp"
+        android:layout_marginLeft="70dp"
+        android:gravity="center"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        app:bgColor="#777777"
+        app:circleCount="1"
+        app:endColor="#ffffe4"
+        app:lineColor="#fffff1"
+        app:startColor="#ffffff" />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        android:text="aaa"
+        android:textColor="#000000" />
+</LinearLayout>

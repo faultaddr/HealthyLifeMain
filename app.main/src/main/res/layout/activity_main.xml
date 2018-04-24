@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.percent.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_heightPercent="100%"
+    tools:context="cn.panyunyi.healthylife.app.server.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_heightPercent="91%">
+        <com.ecloud.pulltozoomview.PullToZoomListViewEx
+            android:id="@+id/main_pic"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </com.ecloud.pulltozoomview.PullToZoomListViewEx>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:orientation="horizontal"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp"
+        android:weightSum="4"
+        app:layout_heightPercent="9%">
+
+        <LinearLayout
+            android:id="@+id/main_page"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:weightSum="5"
+            >
+
+            <ImageView
+                android:src="@drawable/heart_rate"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginBottom="4dp"
+                android:layout_weight="1.5" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="2dp"
+                android:layout_weight="3.5"
+                android:gravity="center"
+                android:text="@string/activity_status"
+                android:textColor="#000000"
+                android:textSize="10sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/sports"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:weightSum="5">
+
+            <ImageView
+                android:src="@drawable/sports"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginBottom="4dp"
+                android:layout_weight="1.5" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="2dp"
+                android:layout_weight="3.5"
+                android:gravity="center"
+                android:text="@string/activity_sports"
+                android:textColor="#000000"
+                android:textSize="10sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/find"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:weightSum="5"
+            >
+
+            <ImageView
+                android:src="@drawable/find"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginBottom="4dp"
+                android:layout_weight="1.5" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="2dp"
+                android:layout_weight="3.5"
+                android:gravity="center"
+                android:text="@string/activity_find"
+                android:textColor="#000000"
+                android:textSize="10sp"
+
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/mine"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:weightSum="5">
+
+            <ImageView
+                android:src="@drawable/mine"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginBottom="4dp"
+                android:layout_weight="1.5" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="2dp"
+                android:layout_weight="3.5"
+                android:gravity="center"
+                android:text="@string/activity_mine"
+                android:textColor="#000000"
+                android:textSize="10sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+    <View
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:background="#ececec"
+        android:layout_above="@id/bottom_bar"
+        android:layout_marginBottom="4dp"
+        />
+</android.support.percent.PercentRelativeLayout>

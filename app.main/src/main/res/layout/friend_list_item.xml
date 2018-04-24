@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:background="#ffffff"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.mi.dlabs.vr.vrbiz.ui.view.CustomImageView
+            android:id="@+id/user_avatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="12dp" />
+
+        <LinearLayout
+            android:id="@+id/user_info"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/user_avatar"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <com.mi.dlabs.vr.vrbiz.ui.view.CustomTextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+            <com.mi.dlabs.vr.vrbiz.ui.view.CustomTextView
+                android:id="@+id/user_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#999999"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+        <com.mi.dlabs.vr.vrbiz.ui.view.CustomImageView
+            android:id="@+id/more_operation"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="6dp"
+
+
+            />
+        <com.mi.dlabs.vr.vrbiz.ui.view.CustomTextView
+            android:id="@+id/user_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@id/more_operation"
+            android:gravity="right"
+            android:textColor="#999999"
+            android:textSize="12sp" />
+
+
+    </RelativeLayout>
+</LinearLayout>

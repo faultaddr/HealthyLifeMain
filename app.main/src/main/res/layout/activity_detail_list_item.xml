@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/item_round_bg"
+
+    >
+    <LinearLayout
+        android:id="@+id/detail"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+
+
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="数据:"
+                android:gravity="center"
+                android:textStyle="bold"
+                />
+        <TextView
+            android:id="@+id/detail_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:layout_margin="8dp"
+            />
+        </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="日期:"
+            android:gravity="center"
+            android:textStyle="bold"
+            />
+        <TextView
+            android:id="@+id/date_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:layout_margin="8dp"
+            />
+    </LinearLayout>
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/go_into"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="8dp"
+        android:layout_toRightOf="@id/detail"
+        android:textSize="14sp"
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="点击查看"
+        android:gravity="center"
+        android:drawableRight="@drawable/arrow_over"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#ececec"
+
+    />
+
+</RelativeLayout>

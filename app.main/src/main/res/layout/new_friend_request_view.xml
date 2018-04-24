@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/new_friend_request"
+        android:textSize="12sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
+
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.mi.dlabs.vr.vrbiz.ui.view.CustomImageView
+                android:id="@+id/user_avatar"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="12dp" />
+
+            <LinearLayout
+                android:id="@+id/user_info"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@id/user_avatar"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <com.mi.dlabs.vr.vrbiz.ui.view.CustomTextView
+                    android:id="@+id/user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#333333"
+                    android:textSize="16sp" />
+
+                <com.mi.dlabs.vr.vrbiz.ui.view.CustomTextView
+                    android:id="@+id/user_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#999999"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/button_decline"
+                android:layout_width="40dp"
+                android:layout_height="24dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="12dp"
+                android:gravity="center"
+
+                android:text="@string/request_decline"
+                android:textColor="#999999"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="40dp"
+                android:layout_height="24dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="8dp"
+                android:layout_toLeftOf="@id/button_decline"
+                android:background="@drawable/button_x"
+                android:gravity="center"
+                android:text="@string/request_accept"
+                android:textColor="#0076ff"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>
