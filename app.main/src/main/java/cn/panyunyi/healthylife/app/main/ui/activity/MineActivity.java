@@ -12,9 +12,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.panyunyi.healthylife.app.main.R;
+import cn.panyunyi.healthylife.app.main.biz.remote.service.LoginSession;
+import cn.panyunyi.healthylife.app.main.ui.custom.CircleImageView;
 import cn.panyunyi.healthylife.app.main.util.DataCleanManager;
 
 public class MineActivity extends AppCompatActivity {
+
+    //view 相关
     @BindView(R.id.mine_activity_back_post)
     RelativeLayout mBackPost;
     @BindView(R.id.mine_activity_delete_data)
@@ -25,6 +29,15 @@ public class MineActivity extends AppCompatActivity {
     RelativeLayout mSearchUpdate;
     @BindView(R.id.mine_activity_mine_info)
     RelativeLayout mMineInfo;
+    @BindView(R.id.user_pic)
+    CircleImageView mUserPic;
+
+
+
+    Snackbar snackbar;
+
+
+//变量
 
 
     @Override
@@ -41,7 +54,9 @@ public class MineActivity extends AppCompatActivity {
     public void onClick(RelativeLayout layout) {
         switch (layout.getId()) {
             case R.id.mine_activity_mine_info:
+                if(LoginSession.getLoginSession()==null){
 
+                }
                 break;
             case R.id.mine_activity_search_update:
 
@@ -56,7 +71,7 @@ public class MineActivity extends AppCompatActivity {
                 try {
                     DataCleanManager.cleanApplicationData(this);
                 }catch (Exception e){
-                    snackbar = Snackbar.make(view, "Snack Bar Text", Snackbar.LENGTH_INDEFINITE);
+                    snackbar = Snackbar.make(mDeleteData, e.getMessage(), Snackbar.LENGTH_INDEFINITE);
                     snackbar.show();
                 }
 

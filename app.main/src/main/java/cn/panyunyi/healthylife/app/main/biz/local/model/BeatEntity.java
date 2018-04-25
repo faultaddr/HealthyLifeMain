@@ -8,7 +8,7 @@ public class BeatEntity {
     public String beats;
     public String currentDate;
     public String timeCount;
-
+    public int userId;
     public String getBeats() {
         return beats;
     }
@@ -31,5 +31,13 @@ public class BeatEntity {
 
     public void setTimeCount(String timeCount) {
         this.timeCount = timeCount;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }
