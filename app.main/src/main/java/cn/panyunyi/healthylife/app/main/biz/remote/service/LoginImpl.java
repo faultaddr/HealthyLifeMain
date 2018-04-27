@@ -3,12 +3,8 @@ package cn.panyunyi.healthylife.app.main.biz.remote.service;
 
 import android.util.Log;
 
-import com.alibaba.fastjson.JSON;
-import com.example.panyunyi.growingup.Constant;
-import com.example.panyunyi.growingup.entity.remote.User;
-import com.example.panyunyi.growingup.entity.remote.UserInfo;
-import com.orhanobut.logger.Logger;
 
+import com.alibaba.fastjson.JSON;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +18,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import cn.panyunyi.healthylife.app.main.Constant;
+import cn.panyunyi.healthylife.app.main.biz.remote.model.MUserEntity;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -33,13 +31,15 @@ import okhttp3.Response;
  */
 
 public class LoginImpl implements LoginManager {
-    private User muser;
+
+    private String TAG="LoginImpl";
+    private MUserEntity muser;
     String result;
     public static final MediaType JSONs
             = MediaType.parse("application/json; charset=utf-8");
     OkHttpClient client = new OkHttpClient();
 
-    public LoginImpl(User user) {
+    public LoginImpl(MUserEntity user) {
 
         muser = user;
 
@@ -47,7 +47,7 @@ public class LoginImpl implements LoginManager {
 
     @Override
     public boolean login() {
-        UserInfo loginedUser = new UserInfo();
+        MUserEntity loginedUser = new MUserEntity();
 //        loginedUser.userId=muser.userId;
 //        loginedUser.userAlipay=muser.userAlipay;
 //        loginedUser.userClass=muser.userClass;
@@ -63,14 +63,15 @@ public class LoginImpl implements LoginManager {
         ExecutorService exs = Executors.newCachedThreadPool();
         JSONObject jsonObject =new JSONObject();
         try {
-            jsonObject.put("userId", muser.userId);
-            jsonObject.put("userPassword", muser.userPassword);
+            jsonObject.put("userName", muser.getUserName());
+            jsonObject.put("UserPassword", muser.getUserPassword());
+            Log.i(TAG,jsonObject.toString());
         } catch (JSONException ex) {
             ex.printStackTrace();
 
         }
 
-        loginPost ct = new loginPost(Constant.API_URL+"/login", jsonObject.toString());//实例化任务对象
+        loginPost ct = new loginPost(Constant.API_URL+"/loginUser", jsonObject.toString());//实例化任务对象
         //大家对Future对象如果陌生，说明你用带返回值的线程用的比较少，要多加练习
         Future<Object> future = exs.submit(ct);//使用线程池对象执行任务并获取返回对象
         try {
@@ -79,7 +80,7 @@ public class LoginImpl implements LoginManager {
 
             exs.shutdown();
             Log.i(">>>",result);
-            loginedUser= JSON.parseObject(result,UserInfo.class);
+            loginedUser= JSON.parseObject(result,MUserEntity.class);
             LoginSession.getLoginSession().setsLoginSession(loginedUser);
             return !LoginResult(result.equals("\"false\""));
         } catch (Exception e) {

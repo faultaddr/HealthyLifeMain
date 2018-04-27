@@ -1,6 +1,5 @@
 package cn.panyunyi.healthylife.app.main.biz.remote.service;
 
-import com.example.panyunyi.growingup.entity.remote.UserInfo;
 
 import cn.panyunyi.healthylife.app.main.biz.remote.model.MUserEntity;
 
@@ -31,11 +30,11 @@ public class LoginSession {
         sLoginSession = null;
     }
 
-    void setsLoginSession(UserInfo user) {
+    void setsLoginSession(MUserEntity user) {
         loginedUser = user;
     }
 
-    public UserInfo getLoginedUser() {
+    public MUserEntity getLoginedUser() {
         return loginedUser;
     }
 }

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_bg"
+    tools:context=".ui.activity.LoginActivity"
+
+    >
+    <RelativeLayout
+        android:id="@+id/mainToAll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <include
+            android:id="@+id/main_title"
+            layout="@layout/title_layout" />
+
+        <LinearLayout
+            android:id="@+id/icon_area"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/main_title"
+            android:orientation="vertical"
+            >
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:elevation="8dp"
+                android:src="@mipmap/ic_launcher" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dip"
+                android:gravity="center"
+                android:text="Healthy LIfe"
+                android:textColor="#ffffff"
+                android:textSize="24sp"
+                android:elevation="8dp"
+                />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/give_u_future_u_could_see"
+                android:textColor="#ffffff"
+                android:elevation="8dp"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_below="@id/icon_area"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/item_round_bg"
+            >
+
+            <include
+                android:id="@+id/input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="130dip"
+                layout="@layout/input_layout" />
+
+            <include
+                android:id="@+id/layout_progress"
+                android:layout_width="match_parent"
+                android:layout_height="130dip"
+                layout="@layout/layout_progress"
+                android:visibility="invisible" />
+            <View
+                android:layout_below="@id/layout_progress"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#ececec"
+                />
+            <TextView
+                android:id="@+id/main_btn_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/input_layout"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="15dip"
+                android:background="@drawable/round_button_blue"
+                android:gravity="center"
+                android:paddingBottom="2dip"
+                android:paddingLeft="15dip"
+                android:paddingRight="15dip"
+                android:paddingTop="2dip"
+                android:text="Login"
+                android:elevation="8dp"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:layout_marginBottom="8dp"
+                />
+        </RelativeLayout>
+    </RelativeLayout>
+    <FrameLayout
+        android:id="@+id/registerFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        ></FrameLayout>
+
+</RelativeLayout>
