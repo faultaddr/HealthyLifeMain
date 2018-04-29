@@ -10,12 +10,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Message;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -26,6 +28,8 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -35,6 +39,7 @@ import butterknife.ButterKnife;
 import cn.panyunyi.healthylife.app.main.R;
 import cn.panyunyi.healthylife.app.main.biz.remote.model.MUserEntity;
 import cn.panyunyi.healthylife.app.main.biz.remote.service.LoginImpl;
+import cn.panyunyi.healthylife.app.main.event.MessageEvent;
 import cn.panyunyi.healthylife.app.main.util.ACache;
 import cn.panyunyi.healthylife.app.main.util.JellyInterpolator;
 
@@ -87,13 +92,16 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                             boolean result = login.login();
                             Log.i("LoginActivity>>>result", result + "");
                             if (result) {
+                                MessageEvent messageEvent=new MessageEvent("loginStatus","true");
+
+                                EventBus.getDefault().post(messageEvent);
+
                                 Message message = new Message();
                                 message.what = 1;
                                 handler.sendMessage(message);
+
                             }else{
-                                Intent intentRaw=new Intent(LoginActivity.this,LoginActivity.class);
-                                startActivity(intentRaw);
-                                finish();
+                               Snackbar.make(mainToAll,"登录失败请检查密码",Snackbar.LENGTH_LONG);
                             }
                         }
                     }.start();
@@ -111,8 +119,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 

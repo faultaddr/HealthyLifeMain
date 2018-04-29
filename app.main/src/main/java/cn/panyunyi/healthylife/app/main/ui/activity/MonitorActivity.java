@@ -51,6 +51,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import cn.panyunyi.healthylife.app.main.Constant;
 import cn.panyunyi.healthylife.app.main.biz.local.dao.BeatDataDao;
 import cn.panyunyi.healthylife.app.main.biz.local.model.BeatEntity;
 import cn.panyunyi.healthylife.app.main.event.MessageEvent;
@@ -541,7 +542,7 @@ public class MonitorActivity extends Activity {
 
 
                 EventBus eventBus = EventBus.getDefault();
-                MessageEvent event = new MessageEvent(1, String.valueOf(beatsAvg));
+                MessageEvent event = new MessageEvent(Constant.beatsUpdate, String.valueOf(beatsAvg));
                 eventBus.postSticky(event);
                 BeatEntity entity=new BeatEntity();
                 Log.i(TAG,preferences.getString("count",null)+"");

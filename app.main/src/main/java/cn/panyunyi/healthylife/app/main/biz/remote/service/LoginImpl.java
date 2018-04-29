@@ -32,12 +32,12 @@ import okhttp3.Response;
 
 public class LoginImpl implements LoginManager {
 
-    private String TAG="LoginImpl";
+    private static String TAG="LoginImpl";
     private MUserEntity muser;
     String result;
     public static final MediaType JSONs
             = MediaType.parse("application/json; charset=utf-8");
-    OkHttpClient client = new OkHttpClient();
+    static OkHttpClient client = new OkHttpClient();
 
     public LoginImpl(MUserEntity user) {
 
@@ -97,12 +97,12 @@ public class LoginImpl implements LoginManager {
     }
 
 
-    class loginPost implements Callable<Object> {
+    public static class loginPost implements Callable<Object> {
         String url;
         String json;
 
         public loginPost(String url, String json) {
-            this.url = url;
+                this.url = url;
 
                 this.json = json;
 
@@ -114,8 +114,8 @@ public class LoginImpl implements LoginManager {
                     .url(url)
                     .post(body)
                     .build();
+            Log.i(TAG,request.toString());
             Response response = client.newCall(request).execute();
-            Log.i(">>>", json);
             String r=response.body().string();
             return r;
         }

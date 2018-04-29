@@ -255,13 +255,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onDataSynEvent(MessageEvent event) {
         switch (event.getMessageType()) {
             //步数计数器
-            case 0:
+            case Constant.stepsUpdate:
                 steps = event.getMessageContent();
                 Log.i(TAG, "step count is" + steps);
                 adapter.setSteps(steps);
                 adapter.notifyDataSetChanged();
                 break;
-            case 1:
+            case Constant.beatsUpdate:
                 beats = event.getMessageContent();
                 Log.i(TAG, "beats is" + beats);
                 adapter.setBeats(beats);

@@ -104,7 +104,7 @@ public class RadarView extends View {
     public void onDataSynEvent(MessageEvent event) {
         switch (event.getMessageType()) {
             //步数计数器
-            case 0:
+            case "stepsUpdate":
                 int step = Integer.parseInt(event.getMessageContent());
                 Log.i(TAG, "step count is" + step);
                 stepCount=step+"";

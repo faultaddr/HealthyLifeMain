@@ -2,27 +2,20 @@ package cn.panyunyi.healthylife.app.main.event;
 
 public class MessageEvent {
 
-    private int messageType;
+    private String messageType;
     private String messageContent;
 
-    public MessageEvent(int message,String content) {
+    public MessageEvent(String message, String content) {
         this.messageType = message;
         this.messageContent=content;
     }
 
-    public int getMessage() {
+
+    public String getMessageType() {
         return messageType;
     }
 
-    public void setMessage(int message) {
-        this.messageType = message;
-    }
-
-    public int getMessageType() {
-        return messageType;
-    }
-
-    public void setMessageType(int messageType) {
+    public void setMessageType(String messageType) {
         this.messageType = messageType;
     }
 

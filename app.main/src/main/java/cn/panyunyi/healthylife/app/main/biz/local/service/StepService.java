@@ -294,7 +294,7 @@ public class StepService extends Service implements SensorEventListener {
                 CURRENT_STEP++;
             }
         }
-        EventBus.getDefault().postSticky(new MessageEvent(0,CURRENT_STEP+""));
+        EventBus.getDefault().postSticky(new MessageEvent(Constant.stepsUpdate,CURRENT_STEP+""));
     }
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {

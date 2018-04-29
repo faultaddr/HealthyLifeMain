@@ -7,14 +7,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.security.spec.ECField;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.panyunyi.healthylife.app.main.Constant;
 import cn.panyunyi.healthylife.app.main.R;
 import cn.panyunyi.healthylife.app.main.biz.remote.service.LoginSession;
+import cn.panyunyi.healthylife.app.main.event.MessageEvent;
 import cn.panyunyi.healthylife.app.main.ui.custom.CircleImageView;
 import cn.panyunyi.healthylife.app.main.util.DataCleanManager;
 
@@ -33,7 +40,8 @@ public class MineActivity extends AppCompatActivity implements View.OnClickListe
     RelativeLayout mMineInfo;
     @BindView(R.id.user_pic)
     CircleImageView mUserPic;
-
+    @BindView(R.id.user_name)
+    TextView mUserName;
 
 
     Snackbar snackbar;
@@ -50,6 +58,7 @@ public class MineActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_mine);
         ButterKnife.bind(this);
         initView();
+        EventBus.getDefault().register(this);
 
 
     }
@@ -64,7 +73,16 @@ public class MineActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void handleLoginStatus(MessageEvent messageEvent){
+        if(messageEvent.getMessageType().equals(Constant.loginStatus)){
+            if (messageEvent.getMessageContent().equals(true)){
+                mUserName.setText(messageEvent.getMessageContent());
+            }else{
+                mUserName.setText("游客");
+            }
+        }
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -74,7 +92,8 @@ public class MineActivity extends AppCompatActivity implements View.OnClickListe
                     intent.setClass(this, LoginActivity.class);
                     startActivityForResult(intent, 0);
                 } else {
-
+                    mUserName.setText(LoginSession.getLoginSession().getLoginedUser().getUserName());
+                    //TODO  获取头像的地址，异步加载显示
                 }
                 break;
             case R.id.mine_activity_search_update:
