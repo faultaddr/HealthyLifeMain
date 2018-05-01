@@ -17,8 +17,8 @@ import cn.panyunyi.healthylife.app.main.db.OnSqliteUpdateListener;
  *
  * @ClassName: DataBaseOpenHelper
  * @Description: 数据库工具类
- * @author lhy
- * @date 2014-10-9 下午2:36:41
+ *
+ * 
  *
  */
 public class DataBaseOpenHelper extends SQLiteOpenHelper {
@@ -45,7 +45,7 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
      * @param @param userId
      * @param @return
      * @return DataBaseOpenHelper
-     * @author lihy
+     * 
      */
     public static DataBaseOpenHelper getInstance(Context context, String dbName, int dbVersion, List<String> tableSqls) {
         DataBaseOpenHelper dataBaseOpenHelper = dbMaps.get(dbName);
@@ -70,7 +70,7 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
      * @param @param sql
      * @param @param bindArgs
      * @return void
-     * @author lihy
+     * 
      */
     public void execSQL(String sql, Object[] bindArgs) {
         DataBaseOpenHelper dataBaseOpenHelper = dbMaps.get(nowDbName);
@@ -88,7 +88,7 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
      * @param @param bindArgs
      * @param @return
      * @return Cursor
-     * @author lihy
+     * 
      */
     public Cursor rawQuery(String sql, String[] bindArgs) {
         DataBaseOpenHelper dataBaseOpenHelper = dbMaps.get(nowDbName);
@@ -106,7 +106,7 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
      * @param @param table
      * @param @param contentValues 设定文件
      * @return void 返回类型
-     * @author lihy
+     * 
      * @throws
      */
     public void insert(String table, ContentValues contentValues) {
@@ -143,7 +143,7 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
      * @param @param whereClause
      * @param @param whereArgs
      * @return void
-     * @author lihy
+     * 
      */
     public void delete(String table, String whereClause, String[] whereArgs) {
         DataBaseOpenHelper dataBaseOpenHelper = dbMaps.get(nowDbName);
@@ -165,7 +165,7 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
      * @param @param having
      * @param @param orderBy
      * @return void
-     * @author lihy
+     * 
      */
     public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having,
             String orderBy) {
@@ -212,7 +212,7 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
      * @Description 查询，方法重载,table表名，sqlString条件
      * @param @return
      * @return Cursor
-     * @author lihy
+     * 
      */
     public Cursor query(String tableName, String sqlString) {
         DataBaseOpenHelper dataBaseOpenHelper = dbMaps.get(nowDbName);
