@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <!-- 调用硬件相机权限 -->
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -18,13 +18,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:windowSoftInputMode="adjustNothing">
-
-            
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -54,17 +53,20 @@
         </service>
 
         <activity android:name=".ui.activity.DetailActivity" />
-        <activity android:name=".ui.activity.MineActivity"
+        <activity
+            android:name=".ui.activity.MineActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:windowSoftInputMode="adjustNothing"/>
-        <activity android:name=".Tutorial1Activity"/>
-        <activity android:name=".ui.activity.LoginActivity"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity android:name=".Tutorial1Activity" />
+        <activity
+            android:name=".ui.activity.LoginActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:windowSoftInputMode="adjustNothing"/>
+            android:windowSoftInputMode="adjustNothing" />
+        <activity android:name=".ui.activity.FoundActivity"></activity>
     </application>
 
 </manifest>

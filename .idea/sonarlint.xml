@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SonarLintProjectSettings">
+    <option name="bindingEnabled" value="true" />
+    <option name="fileExclusions">
+      <list>
+        <option value="DIRECTORY:app.main\src\main\java\cn\panyunyi\healthylife\app\main" />
+      </list>
+    </option>
+    <option name="projectKey" value="" />
+  </component>
+</project>
