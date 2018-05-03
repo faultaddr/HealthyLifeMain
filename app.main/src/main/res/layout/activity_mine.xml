@@ -3,11 +3,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ececec"
+    android:background="@drawable/gradient_bg"
     android:orientation="vertical"
     >
-
-
 
         <RelativeLayout
             
@@ -32,6 +30,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    android:src="@drawable/user_pic_def"
                     />
 
             </LinearLayout>
@@ -49,14 +48,20 @@
                 android:textColor="@color/orange" />
 
             <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/user_name"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp">
+            <RelativeLayout
                 android:id="@+id/mine_activity_mine_info"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:padding="8dp"
-                
-                android:layout_below="@id/user_name"
+
+
                 >
 
                 <ImageView
@@ -94,7 +99,7 @@
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:layout_below="@id/mine_activity_mine_info"
-                
+
                 android:padding="@dimen/activity_horizontal_margin">
 
                 <ImageView
@@ -196,7 +201,7 @@
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:layout_below="@id/mine_activity_search_update"
-                
+
                 android:padding="@dimen/activity_horizontal_margin">
 
                 <ImageView
@@ -260,13 +265,14 @@
             </RelativeLayout>
 
 
-
+            </RelativeLayout>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="8dp"
-                android:layout_marginHorizontal="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
                 android:textColor="@color/orange"
                 android:background="@drawable/round_button_bg"
                 android:text="@string/exit_login"

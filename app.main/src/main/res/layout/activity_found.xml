@@ -10,44 +10,48 @@
 
     </android.support.v4.view.ViewPager>
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="40dp"
+        android:orientation="horizontal"
         android:background="#00ffffff">
 
         <TextView
-            android:id="@+id/choicest"
+            android:id="@+id/choicest_head"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:text="@string/choicest"
+            android:layout_weight="1"
             android:textColor="#ffffff"
+            android:gravity="center"
+            android:text="@string/choicest_head"
             android:textSize="18sp" />
 
         <TextView
             android:id="@+id/interesting_things"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_toRightOf="@id/choicest"
+            android:layout_toRightOf="@id/choicest_head"
             android:text="@string/interesting_things"
             android:textColor="#ffffff"
             android:textSize="18sp"
-
+            android:layout_weight="1"
+            android:gravity="center"
             />
 
         <TextView
             android:id="@+id/others"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
+            android:layout_weight="1"
             android:layout_toRightOf="@id/interesting_things"
             android:text="@string/others"
             android:textColor="#ffffff"
+            android:gravity="center"
             android:textSize="18sp" />
-    </RelativeLayout>
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
@@ -93,7 +97,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+
+            >
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -159,5 +165,22 @@
 
         </LinearLayout>
     </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_below="@id/center_menu"
+        android:background="#ececec" />
+
+    <android.support.v7.widget.RecyclerView
+
+        android:id="@+id/news_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/divider">
+
+
+    </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>

@@ -31,6 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.panyunyi.healthylife.app.main.event.MessageEvent;
 import cn.panyunyi.healthylife.app.main.ui.activity.DetailActivity;
+import cn.panyunyi.healthylife.app.main.ui.activity.FoundActivity;
 import cn.panyunyi.healthylife.app.main.ui.activity.MineActivity;
 import cn.panyunyi.healthylife.app.main.ui.activity.MonitorActivity;
 import cn.panyunyi.healthylife.app.main.ui.adapter.MainListAdapter;
@@ -294,15 +295,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 /*
                  * 跳转到运动页面
                  * */
+            {
                 Intent intent = new Intent();
                 intent.setClass(this, DetailActivity.class);
                 startActivity(intent);
                 break;
+            }
             case R.id.find:
                 /*
                  *
                  * 推荐相关信息
                  * */
+                Intent intent = new Intent();
+                intent.setClass(this, FoundActivity.class);
+                startActivity(intent);
+
+
                 break;
             case R.id.mine:
                 /*

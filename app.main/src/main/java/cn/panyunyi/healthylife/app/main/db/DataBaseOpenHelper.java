@@ -11,8 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.panyunyi.healthylife.app.main.db.OnSqliteUpdateListener;
-
 /**
  *
  * @ClassName: DataBaseOpenHelper
@@ -36,7 +34,6 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
         createTableList = new ArrayList<String>();
         createTableList.addAll(tableSqls);
     }
- 
     /**
      *
      * @Title: getInstance
@@ -55,14 +52,12 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
         dbMaps.put(dbName, dataBaseOpenHelper);
         return dataBaseOpenHelper;
     };
- 
     @Override
     public void onCreate(SQLiteDatabase db) {
         for (String sqlString : createTableList) {
             db.execSQL(sqlString);
         }
     }
-     
     /**
      *
      * @Title: execSQL
@@ -79,7 +74,6 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
             database.execSQL(sql, bindArgs);
         }
     }
- 
     /**
      *
      * @Title: rawQuery
@@ -98,7 +92,6 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
             return cursor;
         }
     }
- 
     /**
      *
      * @Title: insert
@@ -116,7 +109,6 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
             database.insert(table, null, contentValues);
         }
     }
- 
     /**
      *
      * @Title: update
@@ -152,7 +144,6 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
             database.delete(table, whereClause, whereArgs);
         }
     }
- 
     /**
      *
      * @Title: query
@@ -206,7 +197,6 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
             return cursor;
         }
     }
- 
     /**
      *
      * @Description 查询，方法重载,table表名，sqlString条件
@@ -223,7 +213,6 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
             return cursor;
         }
     }
- 
     /**
      * @see android.database.sqlite.SQLiteOpenHelper#close()
      */
@@ -232,7 +221,6 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
         dataBaseOpenHelper.close();
         dbMaps.remove(dataBaseOpenHelper);
     }
- 
     /**
      * onUpgrade()方法在数据库版本每次发生变化时都会把用户手机上的数据库表删除，然后再重新创建。<br/>
      * 一般在实际项目中是不能这样做的，正确的做法是在更新数据库表结构时，还要考虑用户存放于数据库中的数据不会丢失,从版本几更新到版本几。(非
@@ -247,7 +235,6 @@ public class DataBaseOpenHelper extends SQLiteOpenHelper {
             onSqliteUpdateListener.onSqliteUpdateListener(db, arg1, arg2);
         }
     }
-
     public void setOnSqliteUpdateListener(OnSqliteUpdateListener onSqliteUpdateListener) {
         this.onSqliteUpdateListener = onSqliteUpdateListener;
     }

@@ -1,4 +1,4 @@
-package cn.panyunyi.healthylife.app.server.ui.custom;
+package cn.panyunyi.healthylife.app.main.ui.custom;
 
 import android.content.Context;
 import android.graphics.Canvas;
