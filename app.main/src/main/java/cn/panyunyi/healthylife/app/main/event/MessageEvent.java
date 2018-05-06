@@ -7,7 +7,7 @@ public class MessageEvent {
 
     public MessageEvent(String message, String content) {
         this.messageType = message;
-        this.messageContent=content;
+        this.messageContent = content;
     }
 
 

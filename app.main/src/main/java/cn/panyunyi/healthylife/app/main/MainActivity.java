@@ -39,8 +39,10 @@ import cn.panyunyi.healthylife.app.main.ui.custom.RadarView;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private final int REQUEST_CALL_CAMERA = 0;
     public String TAG = "MainActivity";
-
+    public String beats = "";
+    public String steps = "";
     @BindView(R.id.main_pic)
     PullToZoomListViewEx pullToZoomListViewEx;
     @BindView(R.id.mine)
@@ -51,13 +53,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     LinearLayout mSports;
     @BindView(R.id.main_page)
     LinearLayout mMainPage;
-
-
     private EventBus eventBus = null;
     private MainListAdapter adapter;
-    public String beats = "";
-    public String steps = "";
-    private final int REQUEST_CALL_CAMERA = 0;
 
 
     public MainActivity() {

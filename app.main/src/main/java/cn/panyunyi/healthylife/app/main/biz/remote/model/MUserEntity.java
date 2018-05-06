@@ -49,8 +49,10 @@ public class MUserEntity {
         MUserEntity that = (MUserEntity) o;
 
         if (userId != that.userId) return false;
-        if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
-        if (userPassword != null ? !userPassword.equals(that.userPassword) : that.userPassword != null) return false;
+        if (userName != null ? !userName.equals(that.userName) : that.userName != null)
+            return false;
+        if (userPassword != null ? !userPassword.equals(that.userPassword) : that.userPassword != null)
+            return false;
         if (picSrc != null ? !picSrc.equals(that.picSrc) : that.picSrc != null) return false;
 
         return true;

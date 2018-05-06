@@ -1,7 +1,6 @@
 package cn.panyunyi.healthylife.app.main.ui.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -19,29 +18,34 @@ import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.panyunyi.healthylife.app.main.R;
 import cn.panyunyi.healthylife.app.main.biz.local.dao.BeatDataDao;
 import cn.panyunyi.healthylife.app.main.biz.local.model.BeatEntity;
 import cn.panyunyi.healthylife.app.main.db.DataBaseOpenHelper;
 import cn.panyunyi.healthylife.app.main.util.TimeUtil;
 
-import cn.panyunyi.healthylife.app.main.R;
 /**
  * Created by panyunyi on 2018/2/10.
  */
 
 public class MainListAdapter extends BaseAdapter {
 
-    private Context mContext;
-    private int typeFlag = 0;
     int s[] = {R.string.heart_rate, R.string.step_count, R.string.blood_pressure, R.string.blood_oxygen};
     int d[] = {R.drawable.heart, R.drawable.lamp, R.drawable.heart_pressure, R.drawable.oxygen};
+    private Context mContext;
+    private int typeFlag = 0;
     private String beats = "";
     private String steps = "";
     private onClickItemView itemView;
     private String TAG = "MainListAdapter";
+
+    public MainListAdapter(Context context) {
+        mContext = context;
+    }
 
     public void setBeats(String beatsAvg) {
         this.beats = beatsAvg;
@@ -53,17 +57,9 @@ public class MainListAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public MainListAdapter(Context context) {
-        mContext = context;
-    }
-    //接口回调
-    public interface onClickItemView{
-        public void itemViewClicked(int id);
-    }
     public void setOnClickItemView(onClickItemView onClickMyTextView) {
         this.itemView = onClickMyTextView;
     }
-
 
     @Override
     public boolean areAllItemsEnabled() {
@@ -74,7 +70,6 @@ public class MainListAdapter extends BaseAdapter {
     public boolean isEnabled(int i) {
         return false;
     }
-
 
     @Override
     public int getCount() {
@@ -102,10 +97,10 @@ public class MainListAdapter extends BaseAdapter {
         Log.i(TAG, "getview start");
         Log.i(TAG, "beats is" + beats);
         Log.i(TAG, "steps is" + steps);
-        final int  position =i;
+        final int position = i;
         LayoutInflater inflater = LayoutInflater.from(mContext);
         view = inflater.inflate(R.layout.main_page_list_item, null);
-        if(itemView!=null){
+        if (itemView != null) {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -119,7 +114,7 @@ public class MainListAdapter extends BaseAdapter {
                 TextView date = view.findViewById(R.id.date);
                 TextView description = view.findViewById(R.id.detail);
                 TextView unit = view.findViewById(R.id.unit);
-                LineChart chart=view.findViewById(R.id.chart);
+                LineChart chart = view.findViewById(R.id.chart);
                 date.setVisibility(View.VISIBLE);
                 date.setText(TimeUtil.getCurrentDate());
 
@@ -143,7 +138,7 @@ public class MainListAdapter extends BaseAdapter {
                 Drawable drawable = mContext.getDrawable(d[i]);
                 drawable.setBounds(20, 0, 80, 60);
                 title.setCompoundDrawables(drawable, null, null, null);
-                initChartData(0,chart);
+                initChartData(0, chart);
                 chart.setVisibility(View.VISIBLE);
                 view.setTag(i);
             }
@@ -196,7 +191,6 @@ public class MainListAdapter extends BaseAdapter {
         return view;
     }
 
-
     private void initChartData(int i, Object t) {
         switch (i) {
             case 0: {
@@ -204,7 +198,7 @@ public class MainListAdapter extends BaseAdapter {
                 List<String> index = new ArrayList<>();
                 List<BeatEntity> beatList = BeatDataDao.getInstance(mContext).getAllBeats();
                 int count = 0;
-                if(beatList!=null) {
+                if (beatList != null) {
                     for (BeatEntity entity : beatList) {
                         entries.add(new Entry((float) count, (float) Integer.parseInt(entity.beats)));
                         count++;
@@ -231,14 +225,14 @@ public class MainListAdapter extends BaseAdapter {
                         Description description = new Description();
                         description.setText("心率波动值");
                         ((LineChart) t).setDescription(description);
-                    }else{
+                    } else {
                         ((LineChart) t).setVisibility(View.GONE);
                     }
-                }else{
+                } else {
                     ((LineChart) t).setVisibility(View.GONE);
                 }
             }
-                break;
+            break;
 
             case 1:
                 DataBaseOpenHelper helper = DataBaseOpenHelper.getInstance(mContext, "step", 1, null);
@@ -313,6 +307,11 @@ public class MainListAdapter extends BaseAdapter {
     @Override
     public boolean isEmpty() {
         return false;
+    }
+
+    //接口回调
+    public interface onClickItemView {
+        public void itemViewClicked(int id);
     }
 
 

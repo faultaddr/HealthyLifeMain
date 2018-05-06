@@ -32,9 +32,9 @@ import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.panyunyi.healthylife.app.main.R;
 import cn.panyunyi.healthylife.app.main.biz.local.dao.BeatDataDao;
 import cn.panyunyi.healthylife.app.main.biz.local.model.BeatEntity;
-import cn.panyunyi.healthylife.app.main.R;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;

@@ -19,7 +19,7 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
         application = this;
-        Constant constant=new Constant(Application.this);
+        Constant constant = new Constant(Application.this);
         constant.setConstants();
         startStepService();
     }

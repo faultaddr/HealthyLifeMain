@@ -1,16 +1,15 @@
 package cn.panyunyi.healthylife.app.main.biz.local.dao;
 
-import android.content.Context;
-
-import cn.panyunyi.healthylife.app.main.biz.local.model.BeatEntity;
-import cn.panyunyi.healthylife.app.main.db.DataBaseOpenHelper;
-
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.panyunyi.healthylife.app.main.biz.local.model.BeatEntity;
+import cn.panyunyi.healthylife.app.main.db.DataBaseOpenHelper;
 
 /*
  *create by panyunyi on2018/4/19
@@ -18,7 +17,6 @@ import java.util.List;
 
 
 public class BeatDataDao {
-    private String TAG = "BeatDataDao";
     private static BeatDataDao dao;
     Context mContext;
     DataBaseOpenHelper helper;
@@ -27,6 +25,13 @@ public class BeatDataDao {
             "beats VarChar(40), PRIMARY KEY(currentDate)" +
             ");";
     ArrayList<String> s = new ArrayList<>();
+    private String TAG = "BeatDataDao";
+
+    public BeatDataDao(Context applicationContext) {
+        this.mContext = applicationContext;
+        s.add(sql);
+        helper = DataBaseOpenHelper.getInstance(mContext, "beat", 1, s);
+    }
 
     public static BeatDataDao getInstance(Context context) {
         if (dao == null) {
@@ -34,13 +39,6 @@ public class BeatDataDao {
         } else {
             return dao;
         }
-    }
-
-
-    public BeatDataDao(Context applicationContext) {
-        this.mContext = applicationContext;
-        s.add(sql);
-        helper = DataBaseOpenHelper.getInstance(mContext, "beat", 1, s);
     }
 
     public BeatEntity getCurrentDataByDate(String currentDate) {
@@ -85,7 +83,7 @@ public class BeatDataDao {
             beatEntity.beats = cursor.getString(beatsPos);
             beatEntity.timeCount = cursor.getString(timePos);
             Log.i(TAG, beatEntity.beats);
-            beatList.add(0,beatEntity);
+            beatList.add(0, beatEntity);
         }
         return beatList;
 

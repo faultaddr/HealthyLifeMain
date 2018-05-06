@@ -9,6 +9,7 @@ public class BeatEntity {
     public String currentDate;
     public String timeCount;
     public int userId;
+
     public String getBeats() {
         return beats;
     }

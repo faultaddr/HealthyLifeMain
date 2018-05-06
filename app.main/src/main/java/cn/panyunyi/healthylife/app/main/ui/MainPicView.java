@@ -26,14 +26,14 @@ import cn.panyunyi.healthylife.app.main.R;
  * Created by panyunyi on 2018/1/9.
  */
 /*
-* 属性有：
-*
-* 1.表盘
-* 2.对应步数
-* 3.背景图
-*
-*
-* */
+ * 属性有：
+ *
+ * 1.表盘
+ * 2.对应步数
+ * 3.背景图
+ *
+ *
+ * */
 public class MainPicView extends View {
 
 
@@ -60,9 +60,9 @@ public class MainPicView extends View {
     private Canvas mCanvas;
     private Paint mRadarBg;//雷达底色画笔
     /*
-    * 颜色变化范围
-    *
-    * */
+     * 颜色变化范围
+     *
+     * */
     private int startColor;
     private int endColor;
     private int backgroundColor;
@@ -70,15 +70,17 @@ public class MainPicView extends View {
     private int circleCount;
     private Matrix matrix;
     private Shader radarShader;  //paintShader
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public MainPicView(Context context,Builder builder,boolean isDefine) {
+    public MainPicView(Context context, Builder builder, boolean isDefine) {
         this(context, null);
-        this.backgroundPic=builder.backgroundPic;
-        this.plateRadius=builder.plateRadius;
-        this.plateWidth=builder.plateWidth;
-        this.stepCount=builder.stepCount;
+        this.backgroundPic = builder.backgroundPic;
+        this.plateRadius = builder.plateRadius;
+        this.plateWidth = builder.plateWidth;
+        this.stepCount = builder.stepCount;
         setParams();
     }
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public MainPicView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
@@ -89,7 +91,7 @@ public class MainPicView extends View {
 
         super(context, attrs, defStyleAttr);
         mContext = context;
-        if(attrs!=null) {
+        if (attrs != null) {
 
 
             TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.MainPicView, defStyleAttr, 0);
@@ -141,10 +143,10 @@ public class MainPicView extends View {
             }
             a.recycle();
         }
-            mPaint = new Paint();
-            mPaint.setColor(Color.BLUE);
-            mBound = new Rect();
-            mBound.set(100, 100, 400, 400);
+        mPaint = new Paint();
+        mPaint.setColor(Color.BLUE);
+        mBound = new Rect();
+        mBound.set(100, 100, 400, 400);
 
 
     }
@@ -277,36 +279,40 @@ public class MainPicView extends View {
 
     }
 
-public static class Builder{
-    //表盘半径
-    private int plateRadius;
-    //表盘环状宽度
-    private int plateWidth;
-    //对应步数
-    private int stepCount;
-    //背景图片
-    private int backgroundPic;
+    public static class Builder {
+        //表盘半径
+        private int plateRadius;
+        //表盘环状宽度
+        private int plateWidth;
+        //对应步数
+        private int stepCount;
+        //背景图片
+        private int backgroundPic;
 
-    public Builder plateRadius(int plateRadius){
-        this.plateRadius=plateRadius;
-        return this;
+        public Builder plateRadius(int plateRadius) {
+            this.plateRadius = plateRadius;
+            return this;
+        }
+
+        public Builder plateWidth(int plateWidth) {
+            this.plateWidth = plateWidth;
+            return this;
+        }
+
+        public Builder backgroundPic(int backgroundPic) {
+            this.backgroundPic = backgroundPic;
+            return this;
+        }
+
+        public Builder stepCount(int stepCount) {
+            this.stepCount = stepCount;
+            return this;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        public MainPicView build(Context context) {
+            return new MainPicView(context, this, true);
+        }
     }
-    public Builder plateWidth(int plateWidth){
-        this.plateWidth=plateWidth;
-        return this;
-    }
-    public Builder backgroundPic(int backgroundPic){
-        this.backgroundPic=backgroundPic;
-        return this;
-    }
-    public Builder stepCount(int stepCount){
-        this.stepCount=stepCount;
-        return this;
-    }
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public MainPicView build(Context context){
-        return new MainPicView(context,this,true);
-    }
-}
 
 }

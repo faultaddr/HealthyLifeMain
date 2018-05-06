@@ -103,4 +103,11 @@
     <string name="related_news">相关资讯</string>
     <string name="first_aid">急救知识</string>
     <string name="choicest_head">精选</string>
+    <string name="go_into">点击查看</string>
+    <string name="related_info">HealthyMain （本软件）是由种菜的小朋友独立开发完成，所有解释权归种菜的小朋友所有。
+                                本软件不可由除种菜的小朋友外的其他人用作商用，一经发现，将追究相关开发者和公司的法律
+                                责任。
+                                如有相关广告合作，请联系 潘云逸 17888823635 cufer@foxmail.com
+    </string>
+    <string name="seriously_informed">郑重声明</string>
 </resources>

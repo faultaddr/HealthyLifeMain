@@ -8,15 +8,14 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Message;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.CompoundButton;
@@ -46,25 +45,6 @@ import cn.panyunyi.healthylife.app.main.util.JellyInterpolator;
 public class LoginActivity extends Activity implements View.OnClickListener {
     private static int TAG = 2;
     private final Lock lock = new ReentrantLock();
-    //TODO-LIST: 增加注册页面
-    private TextView mBtnLogin;
-    private View progress;
-    private View mInputLayout;
-    private float mWidth, mHeight;
-    private LinearLayout mName, mPsw;
-    private EditText userId;
-    private EditText passWord;
-    private TextView signUp;
-    private RelativeLayout mainToAll;
-    private ImageView backButton;
-    private Condition notComplete = lock.newCondition();
-    private Condition notEmpty = lock.newCondition();
-    private String nameString, psString;
-    @BindView(R.id.remember_pwd)
-    RadioButton radioButton;
-    @BindView(R.id.registerFrame)
-    FrameLayout frameLayout;
-
     @SuppressLint("HandlerLeak")
     public android.os.Handler handler = new android.os.Handler() {
         @Override
@@ -72,10 +52,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
             switch (msg.what) {
                 case 1:
-                    Intent intent = new Intent();
-                    intent.setClass(LoginActivity.this, MineActivity.class);
-
-                    startActivity(intent);
                     finish();
                     break;
                 case 2:
@@ -92,7 +68,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                             boolean result = login.login();
                             Log.i("LoginActivity>>>result", result + "");
                             if (result) {
-                                MessageEvent messageEvent=new MessageEvent("loginStatus","true");
+                                MessageEvent messageEvent = new MessageEvent("loginStatus", "true");
 
                                 EventBus.getDefault().post(messageEvent);
 
@@ -100,8 +76,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                                 message.what = 1;
                                 handler.sendMessage(message);
 
-                            }else{
-                               Snackbar.make(mainToAll,"登录失败请检查密码",Snackbar.LENGTH_LONG);
+                            } else {
+                                Snackbar.make(mainToAll, "登录失败请检查密码", Snackbar.LENGTH_LONG);
                             }
                         }
                     }.start();
@@ -110,11 +86,28 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     break;
 
             }
-
             super.handleMessage(msg);
         }
 
     };
+    @BindView(R.id.remember_pwd)
+    RadioButton radioButton;
+    //TODO-LIST: 增加注册页面
+    private TextView mBtnLogin;
+    private View progress;
+    private View mInputLayout;
+    private float mWidth, mHeight;
+    private LinearLayout mName, mPsw;
+    private EditText userId;
+    private EditText passWord;
+    private TextView signUp;
+    private RelativeLayout mainToAll;
+    private ImageView backButton;
+    private Condition notComplete = lock.newCondition();
+    private Condition notEmpty = lock.newCondition();
+    private String nameString, psString;
+    @BindView(R.id.registerFrame)
+    FrameLayout frameLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,15 +117,15 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        final ImageView imageView=new ImageView(this);
+        final ImageView imageView = new ImageView(this);
         imageView.setImageResource(R.drawable.login_activity_init);
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         frameLayout.addView(imageView);
-        ObjectAnimator animatorX = ObjectAnimator.ofFloat(imageView,"scaleX",1.0f,1.3f);
-        ObjectAnimator animatorY = ObjectAnimator.ofFloat(imageView,"scaleY",1.0f,1.3f);
-        AnimatorSet set =new AnimatorSet();
+        ObjectAnimator animatorX = ObjectAnimator.ofFloat(imageView, "scaleX", 1.0f, 1.3f);
+        ObjectAnimator animatorY = ObjectAnimator.ofFloat(imageView, "scaleY", 1.0f, 1.3f);
+        AnimatorSet set = new AnimatorSet();
         set.setDuration(3000);
-        set.playTogether(animatorX,animatorY);
+        set.playTogether(animatorX, animatorY);
         set.start();
         set.addListener(new Animator.AnimatorListener() {
             @Override
@@ -156,8 +149,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
             }
         });
-
-
 
 
 //        if(getIntent()!=null) {
@@ -208,9 +199,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.i(">>>>>>",s.toString());
-                String pwd= ACache.get(getApplicationContext()).getAsString(s.toString()+"pwd");
-                if(pwd!=null){
+                Log.i(">>>>>>", s.toString());
+                String pwd = ACache.get(getApplicationContext()).getAsString(s.toString() + "pwd");
+                if (pwd != null) {
                     passWord.setText(pwd);
                 }
             }
@@ -223,10 +214,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    if(userId.getText()!=null) {
+                if (isChecked) {
+                    if (userId.getText() != null) {
                         ACache aCache = ACache.get(getApplicationContext());
-                        aCache.put(userId.getText().toString()+"pwd", passWord.getText().toString());
+                        aCache.put(userId.getText().toString() + "pwd", passWord.getText().toString());
                     }
                 }
             }

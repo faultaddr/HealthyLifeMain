@@ -23,39 +23,50 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import cn.panyunyi.healthylife.app.main.Constant;
+import cn.panyunyi.healthylife.app.main.GlobalHttpManager;
 import cn.panyunyi.healthylife.app.main.MainActivity;
+import cn.panyunyi.healthylife.app.main.R;
 import cn.panyunyi.healthylife.app.main.biz.local.dao.StepDataDao;
 import cn.panyunyi.healthylife.app.main.biz.local.model.StepEntity;
+import cn.panyunyi.healthylife.app.main.biz.remote.service.LoginSession;
 import cn.panyunyi.healthylife.app.main.event.MessageEvent;
 import cn.panyunyi.healthylife.app.main.util.TimeUtil;
-
-
-import cn.panyunyi.healthylife.app.main.R;
-
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class StepService extends Service implements SensorEventListener {
     public static final String TAG = "StepService";
     //当前日期
     private static String CURRENT_DATE;
-    //当前步数
-    private int CURRENT_STEP;
     //3秒进行一次存储
     private static int saveDuration = 3000;
+    //计步传感器类型 0-counter 1-detector
+    private static int stepSensor = -1;
+    //当前步数
+    private int CURRENT_STEP;
     //传感器
     private SensorManager sensorManager;
     //数据库
     private StepDataDao stepDataDao;
-    //计步传感器类型 0-counter 1-detector
-    private static int stepSensor = -1;
     //广播接收
     private BroadcastReceiver mInfoReceiver;
     //自定义简易计时器
@@ -73,6 +84,7 @@ public class StepService extends Service implements SensorEventListener {
     private Intent nfIntent;
 
     private EventBus eventBus;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -96,59 +108,29 @@ public class StepService extends Service implements SensorEventListener {
     public IBinder onBind(Intent intent) {
         return messenger.getBinder();
     }
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        /**
-         * 此处设将Service为前台，不然当APP结束以后很容易被GC给干掉，这也就是大多数音乐播放器会在状态栏设置一个
-         * 原理大都是相通的
-         */
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        //获取一个Notification构造器
-        builder = new Notification.Builder(this.getApplicationContext());
-        /**
-         * 设置点击通知栏打开的界面，此处需要注意了，如果你的计步界面不在主界面，则需要判断app是否已经启动，
-         * 再来确定跳转页面，这里面太多坑，（别问我为什么知道 - -）
-         * 总之有需要的可以和我交流
-         */
-        nfIntent = new Intent(this, MainActivity.class);
-        builder.setContentIntent(PendingIntent.getActivity(this, 0, nfIntent, 0)) // 设置PendingIntent
-                .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher)) // 设置下拉列表中的图标(大图标)
-                .setContentTitle("今日步数"+CURRENT_STEP+"步") // 设置下拉列表里的标题
-                .setSmallIcon(R.mipmap.ic_launcher) // 设置状态栏内的小图标
-                .setContentText("加油，要记得勤加运动"); // 设置上下文内容
-        // 获取构建好的Notification
-        Notification stepNotification = builder.build();
-        notificationManager.notify(110,stepNotification);
-        // 参数一：唯一的通知标识；参数二：通知消息。
-        startForeground(110, stepNotification);// 开始前台服务
-        return START_STICKY;
-    }
-    /**
-     * 自定义handler
-     */
-    private class MessengerHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case Constant.MSG_FROM_CLIENT:
-                    try {
-                        //这里负责将当前的步数发送出去，可以在界面或者其他地方获取，我这里是在MainActivity中获取来更新界面
-                        Messenger messenger = msg.replyTo;
-                        Message replyMsg = Message.obtain(null, Constant.MSG_FROM_SERVER);
-                        Bundle bundle = new Bundle();
-                        bundle.putInt("steps", CURRENT_STEP);
-                        replyMsg.setData(bundle);
-                        messenger.send(replyMsg);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                default:
-                    super.handleMessage(msg);
+
+    static Observable<String> uploadUserStepsData(final StepEntity entity) {
+        return Observable.defer(new Callable<ObservableSource<? extends String>>() {
+            @Override
+            public ObservableSource<? extends String> call() throws Exception {
+                // Do some long running operation
+                String result = null;
+                ExecutorService exs = Executors.newCachedThreadPool();
+                GlobalHttpManager.SendPost post = GlobalHttpManager.getInstance().postMethodManager(Constant.API_URL + "/POST/Step/add", JSON.toJSONString(entity));
+                Future<Object> future = exs.submit(post);//使用线程池对象执行任务并获取返回对象
+                try {
+                    result = future.get().toString();//当调用了future的get方法获取返回的值得时候
+                    //如果线程没有计算完成，那么这里就会一直阻塞等待线程执行完成拿到返回值
+                    exs.shutdown();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return Observable.just(result);
             }
-        }
+        });
     }
+
     /**
      * 初始化广播
      */
@@ -208,6 +190,7 @@ public class StepService extends Service implements SensorEventListener {
         //注册广播
         registerReceiver(mInfoReceiver, filter);
     }
+
     /**
      * 初始化当天数据
      */
@@ -227,6 +210,7 @@ public class StepService extends Service implements SensorEventListener {
             CURRENT_STEP = Integer.parseInt(entity.getSteps());
         }
     }
+
     /**
      * 监听晚上0点变化初始化数据
      */
@@ -238,6 +222,7 @@ public class StepService extends Service implements SensorEventListener {
             initTodayData();
         }
     }
+
     /**
      * 获取传感器实例
      */
@@ -255,6 +240,7 @@ public class StepService extends Service implements SensorEventListener {
             addCountStepListener();
         }
     }
+
     /**
      * 添加传感器监听
      */
@@ -270,6 +256,48 @@ public class StepService extends Service implements SensorEventListener {
             sensorManager.registerListener(StepService.this, detectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        /**
+         * 此处设将Service为前台，不然当APP结束以后很容易被GC给干掉，这也就是大多数音乐播放器会在状态栏设置一个
+         * 原理大都是相通的
+         */
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        //获取一个Notification构造器
+        builder = new Notification.Builder(this.getApplicationContext());
+        /**
+         * 设置点击通知栏打开的界面，此处需要注意了，如果你的计步界面不在主界面，则需要判断app是否已经启动，
+         * 再来确定跳转页面，这里面太多坑，（别问我为什么知道 - -）
+         * 总之有需要的可以和我交流
+         */
+        nfIntent = new Intent(this, MainActivity.class);
+        builder.setContentIntent(PendingIntent.getActivity(this, 0, nfIntent, 0)) // 设置PendingIntent
+                .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher)) // 设置下拉列表中的图标(大图标)
+                .setContentTitle("今日步数" + CURRENT_STEP + "步") // 设置下拉列表里的标题
+                .setSmallIcon(R.mipmap.ic_launcher) // 设置状态栏内的小图标
+                .setContentText("加油，要记得勤加运动"); // 设置上下文内容
+        // 获取构建好的Notification
+        Notification stepNotification = builder.build();
+        notificationManager.notify(110, stepNotification);
+        // 参数一：唯一的通知标识；参数二：通知消息。
+        startForeground(110, stepNotification);// 开始前台服务
+        return START_STICKY;
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    /**
+     * 开始倒计时，去存储步数到数据库中
+     */
+    private void startTimeCount() {
+        timeCount = new TimeCount(saveDuration, 1000);
+        timeCount.start();
+    }
+
     /**
      * 由传感器记录当前用户运动步数，注意：该传感器只在4.4及以后才有，并且该传感器记录的数据是从设备开机以后不断累加，
      * 只有当用户关机以后，该数据才会清空，所以需要做数据保护
@@ -294,41 +322,22 @@ public class StepService extends Service implements SensorEventListener {
                 CURRENT_STEP++;
             }
         }
-        EventBus.getDefault().postSticky(new MessageEvent(Constant.stepsUpdate,CURRENT_STEP+""));
+        EventBus.getDefault().postSticky(new MessageEvent(Constant.stepsUpdate, CURRENT_STEP + ""));
     }
+
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    public void onDestroy() {
+        super.onDestroy();
+        //主界面中需要手动调用stop方法service才会结束
+        stopForeground(true);
+        unregisterReceiver(mInfoReceiver);
     }
-    /**
-     * 开始倒计时，去存储步数到数据库中
-     */
-    private void startTimeCount() {
-        timeCount = new TimeCount(saveDuration, 1000);
-        timeCount.start();
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        return super.onUnbind(intent);
     }
-    private class TimeCount extends CountDownTimer {
-        /**
-         * @param millisInFuture  The number of millis in the future from the call
-         *             to {@link #start()} until the countdown is done and {@link #onFinish()}
-         *             is called.
-         * @param countDownInterval The interval along the way to receive
-         *             {@link #onTick(long)} callbacks.
-         */
-        public TimeCount(long millisInFuture, long countDownInterval) {
-            super(millisInFuture, countDownInterval);
-        }
-        @Override
-        public void onTick(long millisUntilFinished) {
-        }
-        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-        @Override
-        public void onFinish() {
-            // 如果计时器正常结束，则每隔三秒存储步数到数据库
-            timeCount.cancel();
-            saveStepData();
-            startTimeCount();
-        }
-    }
+
     /**
      * 保存当天的数据到数据库中，并去刷新通知栏
      */
@@ -340,35 +349,109 @@ public class StepService extends Service implements SensorEventListener {
 
         //为空则说明还没有该天的数据，有则说明已经开始当天的计步了
         if (entity == null) {
-                //没有则新建一条数据
-                entity = new StepEntity();
-                entity.setCurDate(CURRENT_DATE);
-                entity.setSteps(String.valueOf(CURRENT_STEP));
-                stepDataDao.addNewData(entity);
+            //没有则新建一条数据
+            entity = new StepEntity();
+            entity.setCurDate(CURRENT_DATE);
+            entity.setSteps(String.valueOf(CURRENT_STEP));
+            stepDataDao.addNewData(entity);
+
         } else {
             //有则更新当前的数据
             entity.setSteps(String.valueOf(CURRENT_STEP));
             stepDataDao.updateCurrentData(entity);
         }
+        boolean isLogin = false;
+        if (LoginSession.getLoginSession().getLoginedUser() != null) {
+            isLogin = true;
+            entity.userId = LoginSession.getLoginSession().getLoginedUser().getUserId();
+        }
+
+        /*
+         * 每天十点做数据上传
+         * */
+        if (isLogin && TimeUtil.getCurrentDateDetail().endsWith("22:00:00")) {
+            new CompositeDisposable().add(uploadUserStepsData(entity)
+                    // Run on a background thread
+                    .subscribeOn(Schedulers.io())
+                    // Be notified on the main thread
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableObserver<String>() {
+                        @Override
+                        public void onComplete() {
+                            Log.d(TAG, "step upload onComplete()");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e(TAG, "step upload onError()", e);
+                        }
+
+                        @Override
+                        public void onNext(String string) {
+                            Log.d(TAG, "step upload return value is (" + string + ")");
+                        }
+                    }));
+        }
         builder.setContentIntent(PendingIntent.getActivity(this, 0, nfIntent, 0)) // 设置PendingIntent
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher)) // 设置下拉列表中的图标(大图标)
-                .setContentTitle("今日步数"+CURRENT_STEP+"步") // 设置下拉列表里的标题
+                .setContentTitle("今日步数" + CURRENT_STEP + "步") // 设置下拉列表里的标题
                 .setSmallIcon(R.mipmap.ic_launcher) // 设置状态栏内的小图标
-                .setContentText("加油，要记得勤加运动"); // 设置上下文内容　
+                .setContentText("保重身体，做一个健康的程序员"); // 设置上下文内容　
         // 获取构建好的Notification
         Notification stepNotification = builder.build();
         //调用更新
-        notificationManager.notify(110,stepNotification);
+        notificationManager.notify(110, stepNotification);
     }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        //主界面中需要手动调用stop方法service才会结束
-        stopForeground(true);
-        unregisterReceiver(mInfoReceiver);
+
+    /**
+     * 自定义handler
+     */
+    private class MessengerHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case Constant.MSG_FROM_CLIENT:
+                    try {
+                        //这里负责将当前的步数发送出去，可以在界面或者其他地方获取，我这里是在MainActivity中获取来更新界面
+                        Messenger messenger = msg.replyTo;
+                        Message replyMsg = Message.obtain(null, Constant.MSG_FROM_SERVER);
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("steps", CURRENT_STEP);
+                        replyMsg.setData(bundle);
+                        messenger.send(replyMsg);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
+        }
     }
-    @Override
-    public boolean onUnbind(Intent intent) {
-        return super.onUnbind(intent);
+
+    private class TimeCount extends CountDownTimer {
+        /**
+         * @param millisInFuture    The number of millis in the future from the call
+         *                          to {@link #start()} until the countdown is done and {@link #onFinish()}
+         *                          is called.
+         * @param countDownInterval The interval along the way to receive
+         *                          {@link #onTick(long)} callbacks.
+         */
+        public TimeCount(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+        @Override
+        public void onFinish() {
+            // 如果计时器正常结束，则每隔三秒存储步数到数据库
+            timeCount.cancel();
+            saveStepData();
+            startTimeCount();
+        }
     }
 }

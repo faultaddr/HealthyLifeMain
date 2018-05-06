@@ -27,9 +27,8 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.InputStream;
 
-
-import cn.panyunyi.healthylife.app.main.event.MessageEvent;
 import cn.panyunyi.healthylife.app.main.R;
+import cn.panyunyi.healthylife.app.main.event.MessageEvent;
 
 
 /**
@@ -95,9 +94,20 @@ public class RadarView extends View {
         isConfig = true;
         setParams();
         initPaint();
-        stepCount="0";
+        stepCount = "0";
         EventBus.getDefault().register(this);
 
+    }
+
+    public RadarView(Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public RadarView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        setParams();
+        init(context, attrs);
+        initPaint();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
@@ -107,21 +117,9 @@ public class RadarView extends View {
             case "stepsUpdate":
                 int step = Integer.parseInt(event.getMessageContent());
                 Log.i(TAG, "step count is" + step);
-                stepCount=step+"";
+                stepCount = step + "";
                 break;
         }
-    }
-
-    public RadarView(Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-
-
-    public RadarView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        setParams();
-        init(context, attrs);
-        initPaint();
     }
 
     //初始化，拓展可设置参数供布局使用

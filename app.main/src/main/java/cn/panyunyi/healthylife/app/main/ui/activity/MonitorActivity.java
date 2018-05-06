@@ -1,13 +1,30 @@
 package cn.panyunyi.healthylife.app.main.ui.activity;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.Paint.Align;
+import android.hardware.Camera;
+import android.hardware.Camera.PreviewCallback;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.alibaba.fastjson.JSON;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -17,49 +34,33 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 import org.greenrobot.eventbus.EventBus;
-import org.opencv.core.Mat;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.Paint.Align;
-import android.hardware.Camera;
-import android.hardware.Camera.PreviewCallback;
-import android.inputmethodservice.KeyboardView;
-import android.nfc.Tag;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import cn.panyunyi.healthylife.app.main.Constant;
+import cn.panyunyi.healthylife.app.main.GlobalHttpManager;
+import cn.panyunyi.healthylife.app.main.R;
 import cn.panyunyi.healthylife.app.main.biz.local.dao.BeatDataDao;
 import cn.panyunyi.healthylife.app.main.biz.local.model.BeatEntity;
+import cn.panyunyi.healthylife.app.main.biz.remote.service.LoginSession;
 import cn.panyunyi.healthylife.app.main.event.MessageEvent;
 import cn.panyunyi.healthylife.app.main.util.ImageProcessing;
 import cn.panyunyi.healthylife.app.main.util.TimeUtil;
-
-import cn.panyunyi.healthylife.app.main.R;
-
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -68,36 +69,20 @@ import cn.panyunyi.healthylife.app.main.R;
 
 public class MonitorActivity extends Activity {
 
-    static SharedPreferences preferences;
-    SharedPreferences.Editor editor;
     private static final int REQUEST_CALL_CAMERA = 0;
-    /**
-     * 程序的主入口
-     *
-     * @author liuyazhuang
-     */
-    //曲线
-    private Timer timer = new Timer();
-    //Timer任务，与Timer配套使用
-    private TimerTask task;
-    private static int gx;
-    private static int j;
-
-    private static double flag = 1;
-    private String title = "pulse";
-    private XYSeries series;
-    private XYMultipleSeriesDataset mDataset;
-    private GraphicalView chart;
-    private XYMultipleSeriesRenderer renderer;
-    private Context context;
-    private int addX = -1;
-    double addY;
-    int[] xv = new int[300];
-    int[] yv = new int[300];
-    int[] hua = new int[]{9, 10, 11, 12, 13, 14, 13, 12, 11, 10, 9, 8, 7, 6, 7, 8, 9, 10, 11, 10, 10};
-
     //	private static final String TAG = "HeartRateMonitor";
     private static final AtomicBoolean processing = new AtomicBoolean(false);
+    private static final int averageArraySize = 4;
+    private static final int[] averageArray = new int[averageArraySize];
+    private final static String TAG = "MonitorActivity";
+    //心跳数组的大小
+    private static final int beatsArraySize = 3;
+    //心跳数组
+    private static final int[] beatsArray = new int[beatsArraySize];
+    static SharedPreferences preferences;
+    private static int gx;
+    private static int j;
+    private static double flag = 1;
     //Android手机预览控件
     private static SurfaceView preview = null;
     //预览设置信息
@@ -110,61 +95,309 @@ public class MonitorActivity extends Activity {
     private static TextView text2 = null;
     private static WakeLock wakeLock = null;
     private static int averageIndex = 0;
-    private static final int averageArraySize = 4;
-    private static final int[] averageArray = new int[averageArraySize];
-    private final static String TAG = "MonitorActivity";
-
-    /**
-     * 类型枚举
-     *
-     * @author liuyazhuang
-     */
-    public static enum TYPE {
-        GREEN, RED
-    }
-
-    ;
     //设置默认类型
     private static TYPE currentType = TYPE.GREEN;
-
-    //获取当前类型
-    public static TYPE getCurrent() {
-        return currentType;
-    }
-
     //心跳下标值
     private static int beatsIndex = 0;
-    //心跳数组的大小
-    private static final int beatsArraySize = 3;
-    //心跳数组
-    private static final int[] beatsArray = new int[beatsArraySize];
     //心跳脉冲
     private static double beats = 0;
     //开始时间
     private static long startTime = 0;
-
     private static BeatDataDao dao;
+    private static int beatsAvg;
+    private static List<Double> beatList = new ArrayList<>();
+    /**
+     * 相机预览方法
+     * 这个方法中实现动态更新界面UI的功能，
+     * 通过获取手机摄像头的参数来实时动态计算平均像素值、脉冲数，从而实时动态计算心率值。
+     */
+    private static PreviewCallback previewCallback = new PreviewCallback() {
+        @SuppressLint("SetTextI18n")
+        public void onPreviewFrame(byte[] data, Camera cam) {
+            if (data == null)
+                throw new NullPointerException();
+            Camera.Size size = cam.getParameters().getPreviewSize();
+            if (size == null)
+                throw new NullPointerException();
+            if (!processing.compareAndSet(false, true))
+                return;
+            int width = size.width;
+            int height = size.height;
+            //图像处理
+            int grey[] = new int[100000];
+            double greyValue = ImageProcessing.decodeYUV420spToGrey(width, height, data, grey);
 
+            beatList.add(greyValue);
+
+
+            int imgAvg = ImageProcessing.decodeYUV420SPtoRedAvg(data.clone(), height, width);
+            gx = imgAvg;
+            text1.setText("平均像素值是" + String.valueOf(imgAvg));
+            //像素平均值imgAvg,日志
+            //Log.i(TAG, "imgAvg=" + imgAvg);
+            if (imgAvg == 0 || imgAvg == 255) {
+                processing.set(false);
+                return;
+            }
+            //计算平均值
+            int averageArrayAvg = 0;
+            int averageArrayCnt = 0;
+            for (int i = 0; i < averageArray.length; i++) {
+                if (averageArray[i] > 0) {
+                    averageArrayAvg += averageArray[i];
+                    averageArrayCnt++;
+                }
+            }
+            //计算平均值
+            int rollingAverage = (averageArrayCnt > 0) ? (averageArrayAvg / averageArrayCnt) : 0;
+            TYPE newType = currentType;
+            if (imgAvg < rollingAverage) {
+                newType = TYPE.RED;
+                if (newType != currentType) {
+                    beats++;
+                    flag = 0;
+                    text2.setText("脉冲数是" + String.valueOf(beats));
+                    //Log.e(TAG, "BEAT!! beats=" + beats);
+                }
+            } else if (imgAvg > rollingAverage) {
+                newType = TYPE.GREEN;
+            }
+
+            if (averageIndex == averageArraySize)
+                averageIndex = 0;
+            averageArray[averageIndex] = imgAvg;
+            averageIndex++;
+
+            // Transitioned from one state to another to the same
+            if (newType != currentType) {
+                currentType = newType;
+                //image.postInvalidate();
+            }
+            //获取系统结束时间（ms）
+            long endTime = System.currentTimeMillis();
+            double totalTimeInSecs = (endTime - startTime) / 1000d;
+            if (totalTimeInSecs >= 2) {
+                double bps = (beats / totalTimeInSecs);
+                int dpm = (int) (bps * 60d);
+                if (dpm < 30 || dpm > 180 || imgAvg < 200) {
+                    //获取系统开始时间（ms）
+                    startTime = System.currentTimeMillis();
+                    //beats心跳总数
+                    beats = 0;
+                    processing.set(false);
+                    return;
+                }
+                //Log.e(TAG, "totalTimeInSecs=" + totalTimeInSecs + " beats="+ beats);
+                if (beatsIndex == beatsArraySize)
+                    beatsIndex = 0;
+                beatsArray[beatsIndex] = dpm;
+                beatsIndex++;
+                int beatsArrayAvg = 0;
+                int beatsArrayCnt = 0;
+                for (int i = 0; i < beatsArray.length; i++) {
+                    if (beatsArray[i] > 0) {
+                        beatsArrayAvg += beatsArray[i];
+                        beatsArrayCnt++;
+                    }
+                }
+                beatsAvg = (beatsArrayAvg / beatsArrayCnt);
+                text.setText("您的的心率是" + String.valueOf(beatsAvg) + "  zhi:" + String.valueOf(beatsArray.length)
+                        + "    " + String.valueOf(beatsIndex) + "    " + String.valueOf(beatsArrayAvg) + "    " + String.valueOf(beatsArrayCnt));
+
+
+                EventBus eventBus = EventBus.getDefault();
+                MessageEvent event = new MessageEvent(Constant.beatsUpdate, String.valueOf(beatsAvg));
+                eventBus.postSticky(event);
+                BeatEntity entity = new BeatEntity();
+                Log.i(TAG, preferences.getString("count", null) + "");
+                entity.timeCount = preferences.getString("count", null);
+                entity.currentDate = TimeUtil.getCurrentDateDetail();
+                entity.beats = String.valueOf(beatsAvg);
+                if (LoginSession.getLoginSession().getLoginedUser() != null) {
+                    entity.userId = LoginSession.getLoginSession().getLoginedUser().getUserId();
+                }
+                if (entity.timeCount != null) {
+                    dao.addNewData(entity);
+                }
+
+                //获取系统时间（ms）
+                startTime = System.currentTimeMillis();
+                beats = 0;
+            }
+            processing.set(false);
+        }
+    };
+    /**
+     * 预览回调接口
+     */
+    private static SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
+        //创建时调用
+        @SuppressLint("LongLogTag")
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {
+            try {
+                camera = Camera.open();
+                camera.setPreviewDisplay(previewHolder);
+                camera.setPreviewCallback(previewCallback);
+            } catch (Throwable t) {
+                Log.e("PreviewDemo-surfaceCallback", "Exception in setPreviewDisplay()", t);
+            }
+        }
+
+        //当预览改变的时候回调此方法
+        @Override
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            Camera.Parameters parameters = camera.getParameters();
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+            Camera.Size size = getSmallestPreviewSize(width, height, parameters);
+            if (size != null) {
+                parameters.setPreviewSize(size.width, size.height);
+                //				Log.d(TAG, "Using width=" + size.width + " height="	+ size.height);
+            }
+            camera.setParameters(parameters);
+            camera.startPreview();
+        }
+
+        //销毁的时候调用
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            // Ignore
+        }
+    };
+    SharedPreferences.Editor editor;
+    double addY;
+    int[] xv = new int[300];
+    int[] yv = new int[300];
+
+    ;
+    int[] hua = new int[]{9, 10, 11, 12, 13, 14, 13, 12, 11, 10, 9, 8, 7, 6, 7, 8, 9, 10, 11, 10, 10};
+    /**
+     * 程序的主入口
+     *
+     * @author liuyazhuang
+     */
+    //曲线
+    private Timer timer = new Timer();
+    //Timer任务，与Timer配套使用
+    private TimerTask task;
+    private String title = "pulse";
+    private XYSeries series;
+    private XYMultipleSeriesDataset mDataset;
+    private GraphicalView chart;
+    private XYMultipleSeriesRenderer renderer;
+    private Context context;
+    private int addX = -1;
     //这里的Handler实例将配合下面的Timer实例，完成定时更新图表的功能
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
 
-                //        		刷新图表
-                updateChart();
+            //        		刷新图表
+            updateChart();
 
         }
     };
     private CountDownLatch requestPemission = new CountDownLatch(1);
 
+    //获取当前类型
+    public static TYPE getCurrent() {
+        return currentType;
+    }
+
+    public static native void yuv420sp_to_yuv420p(byte[] yuv420sp, byte[] yuv420p, int width, int height);
+
+    /**
+     * 获取相机最小的预览尺寸
+     *
+     * @param width
+     * @param height
+     * @param parameters
+     * @return
+     */
+    private static Camera.Size getSmallestPreviewSize(int width, int height,
+                                                      Camera.Parameters parameters) {
+        Camera.Size result = null;
+        for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
+            if (size.width <= width && size.height <= height) {
+                if (result == null) {
+                    result = size;
+                } else {
+                    int resultArea = result.width * result.height;
+                    int newArea = size.width * size.height;
+                    if (newArea < resultArea)
+                        result = size;
+                }
+            }
+        }
+        return result;
+    }
+
+    static Observable<String> uploadUserBeatsData(final BeatEntity entity) {
+        return Observable.defer(new Callable<ObservableSource<? extends String>>() {
+            @Override
+            public ObservableSource<? extends String> call() throws Exception {
+                // Do some long running operation
+                String result = null;
+                ExecutorService exs = Executors.newCachedThreadPool();
+                GlobalHttpManager.SendPost post = GlobalHttpManager.getInstance().postMethodManager(Constant.API_URL + "/POST/Beat/add", JSON.toJSONString(entity));
+                Future<Object> future = exs.submit(post);//使用线程池对象执行任务并获取返回对象
+                try {
+                    result = future.get().toString();//当调用了future的get方法获取返回的值得时候
+                    //如果线程没有计算完成，那么这里就会一直阻塞等待线程执行完成拿到返回值
+                    exs.shutdown();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return Observable.just(result);
+            }
+        });
+    }
+
+    ;
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            BeatEntity entity = new BeatEntity();
+            entity.timeCount = preferences.getString("count", null);
+            entity.currentDate = TimeUtil.getCurrentDateDetail();
+            entity.beats = String.valueOf(beatsAvg);
+            boolean isLogin = false;
+            if (LoginSession.getLoginSession().getLoginedUser() != null) {
+                isLogin = true;
+                entity.userId = LoginSession.getLoginSession().getLoginedUser().getUserId();
+            }
+
+            if (isLogin) {
+                new CompositeDisposable().add(uploadUserBeatsData(entity)
+                        // Run on a background thread
+                        .subscribeOn(Schedulers.io())
+                        // Be notified on the main thread
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableObserver<String>() {
+                            @Override
+                            public void onComplete() {
+                                Log.d(TAG, "onComplete()");
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e(TAG, "onError()", e);
+                            }
+
+                            @Override
+                            public void onNext(String string) {
+                                Log.d(TAG, "onNext(" + string + ")");
+                            }
+                        }));
+            }
             Intent intent = new Intent();
             intent.putExtra("beats", String.valueOf(beatsAvg));
             setResult(1, intent);
             task.cancel();
+
             finish();
             return false;
         } else {
@@ -184,25 +417,9 @@ public class MonitorActivity extends Activity {
         initConfig();
         initView();
 
-        camera=Camera.open();
+        camera = Camera.open();
 
 
-
-    }
-
-    private void initVariables() {
-        context = getApplicationContext();
-        dao=new BeatDataDao(context.getApplicationContext());
-
-        preferences = getSharedPreferences("count",MODE_PRIVATE);
-        //读取SharedPreferences里的count数据，若存在返回其值，否则返回0
-        String count = preferences.getString("count","0");
-        int record=Integer.parseInt(count);
-        editor = preferences.edit();
-        //存入数据
-        editor.putString("count",++record+"");
-        //提交修改
-        editor.commit();
     }
 
     private void initView() {
@@ -254,7 +471,6 @@ public class MonitorActivity extends Activity {
         layout.addView(chart, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 
 
-
         task = new TimerTask() {
             @Override
             public void run() {
@@ -275,8 +491,6 @@ public class MonitorActivity extends Activity {
         timer.cancel();
         super.onDestroy();
     }
-
-    ;
 
     /**
      * 创建图表
@@ -398,17 +612,31 @@ public class MonitorActivity extends Activity {
         chart.invalidate();
     } //曲线
 
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+    }
+
+    private void initVariables() {
+        context = getApplicationContext();
+        dao = new BeatDataDao(context.getApplicationContext());
+
+        preferences = getSharedPreferences("count", MODE_PRIVATE);
+        //读取SharedPreferences里的count数据，若存在返回其值，否则返回0
+        String count = preferences.getString("count", "0");
+        int record = Integer.parseInt(count);
+        editor = preferences.edit();
+        //存入数据
+        editor.putString("count", ++record + "");
+        //提交修改
+        editor.commit();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         try {
-            if(wakeLock!=null)
+            if (wakeLock != null)
                 wakeLock.acquire();
         } catch (Exception e) {
             e.printStackTrace();
@@ -421,7 +649,7 @@ public class MonitorActivity extends Activity {
     public void onPause() {
         super.onPause();
         try {
-            if(wakeLock!=null)
+            if (wakeLock != null)
                 wakeLock.release();
         } catch (Exception e) {
             e.printStackTrace();
@@ -438,192 +666,12 @@ public class MonitorActivity extends Activity {
         }
     }
 
-    public static native void yuv420sp_to_yuv420p(byte[] yuv420sp, byte[] yuv420p, int width, int height);
-    private static int beatsAvg;
-
-    private static List<Double> beatList=new ArrayList<>();
     /**
-     * 相机预览方法
-     * 这个方法中实现动态更新界面UI的功能，
-     * 通过获取手机摄像头的参数来实时动态计算平均像素值、脉冲数，从而实时动态计算心率值。
-     */
-    private static PreviewCallback previewCallback = new PreviewCallback() {
-        @SuppressLint("SetTextI18n")
-        public void onPreviewFrame(byte[] data, Camera cam) {
-            if (data == null)
-                throw new NullPointerException();
-            Camera.Size size = cam.getParameters().getPreviewSize();
-            if (size == null)
-                throw new NullPointerException();
-            if (!processing.compareAndSet(false, true))
-                return;
-            int width = size.width;
-            int height = size.height;
-            //图像处理
-            int grey[]=new int[100000];
-            double greyValue=ImageProcessing.decodeYUV420spToGrey(width,height,data,grey);
-
-            beatList.add(greyValue);
-
-
-            int imgAvg = ImageProcessing.decodeYUV420SPtoRedAvg(data.clone(), height, width);
-            gx = imgAvg;
-            text1.setText("平均像素值是" + String.valueOf(imgAvg));
-            //像素平均值imgAvg,日志
-            //Log.i(TAG, "imgAvg=" + imgAvg);
-            if (imgAvg == 0 || imgAvg == 255) {
-                processing.set(false);
-                return;
-            }
-            //计算平均值
-            int averageArrayAvg = 0;
-            int averageArrayCnt = 0;
-            for (int i = 0; i < averageArray.length; i++) {
-                if (averageArray[i] > 0) {
-                    averageArrayAvg += averageArray[i];
-                    averageArrayCnt++;
-                }
-            }
-            //计算平均值
-            int rollingAverage = (averageArrayCnt > 0) ? (averageArrayAvg / averageArrayCnt) : 0;
-            TYPE newType = currentType;
-            if (imgAvg < rollingAverage) {
-                newType = TYPE.RED;
-                if (newType != currentType) {
-                    beats++;
-                    flag = 0;
-                    text2.setText("脉冲数是" + String.valueOf(beats));
-                    //Log.e(TAG, "BEAT!! beats=" + beats);
-                }
-            } else if (imgAvg > rollingAverage) {
-                newType = TYPE.GREEN;
-            }
-
-            if (averageIndex == averageArraySize)
-                averageIndex = 0;
-            averageArray[averageIndex] = imgAvg;
-            averageIndex++;
-
-            // Transitioned from one state to another to the same
-            if (newType != currentType) {
-                currentType = newType;
-                //image.postInvalidate();
-            }
-            //获取系统结束时间（ms）
-            long endTime = System.currentTimeMillis();
-            double totalTimeInSecs = (endTime - startTime) / 1000d;
-            if (totalTimeInSecs >= 2) {
-                double bps = (beats / totalTimeInSecs);
-                int dpm = (int) (bps * 60d);
-                if (dpm < 30 || dpm > 180 || imgAvg < 200) {
-                    //获取系统开始时间（ms）
-                    startTime = System.currentTimeMillis();
-                    //beats心跳总数
-                    beats = 0;
-                    processing.set(false);
-                    return;
-                }
-                //Log.e(TAG, "totalTimeInSecs=" + totalTimeInSecs + " beats="+ beats);
-                if (beatsIndex == beatsArraySize)
-                    beatsIndex = 0;
-                beatsArray[beatsIndex] = dpm;
-                beatsIndex++;
-                int beatsArrayAvg = 0;
-                int beatsArrayCnt = 0;
-                for (int i = 0; i < beatsArray.length; i++) {
-                    if (beatsArray[i] > 0) {
-                        beatsArrayAvg += beatsArray[i];
-                        beatsArrayCnt++;
-                    }
-                }
-                beatsAvg = (beatsArrayAvg / beatsArrayCnt);
-                text.setText("您的的心率是" + String.valueOf(beatsAvg) + "  zhi:" + String.valueOf(beatsArray.length)
-                        + "    " + String.valueOf(beatsIndex) + "    " + String.valueOf(beatsArrayAvg) + "    " + String.valueOf(beatsArrayCnt));
-
-
-                EventBus eventBus = EventBus.getDefault();
-                MessageEvent event = new MessageEvent(Constant.beatsUpdate, String.valueOf(beatsAvg));
-                eventBus.postSticky(event);
-                BeatEntity entity=new BeatEntity();
-                Log.i(TAG,preferences.getString("count",null)+"");
-                entity.timeCount=preferences.getString("count",null);
-                entity.currentDate= TimeUtil.getCurrentDateDetail();
-                entity.beats=String.valueOf(beatsAvg);
-                if(entity.timeCount!=null) {
-                    dao.addNewData(entity);
-                }
-
-                //获取系统时间（ms）
-                startTime = System.currentTimeMillis();
-                beats = 0;
-            }
-            processing.set(false);
-        }
-    };
-
-    /**
-     * 预览回调接口
-     */
-    private static SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
-        //创建时调用
-        @SuppressLint("LongLogTag")
-        @Override
-        public void surfaceCreated(SurfaceHolder holder) {
-            try {
-                camera = Camera.open();
-                camera.setPreviewDisplay(previewHolder);
-                camera.setPreviewCallback(previewCallback);
-            } catch (Throwable t) {
-                Log.e("PreviewDemo-surfaceCallback", "Exception in setPreviewDisplay()", t);
-            }
-        }
-
-        //当预览改变的时候回调此方法
-        @Override
-        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-            Camera.Parameters parameters = camera.getParameters();
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-            Camera.Size size = getSmallestPreviewSize(width, height, parameters);
-            if (size != null) {
-                parameters.setPreviewSize(size.width, size.height);
-                //				Log.d(TAG, "Using width=" + size.width + " height="	+ size.height);
-            }
-            camera.setParameters(parameters);
-            camera.startPreview();
-        }
-
-        //销毁的时候调用
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
-            // Ignore
-        }
-    };
-
-    /**
-     * 获取相机最小的预览尺寸
+     * 类型枚举
      *
-     * @param width
-     * @param height
-     * @param parameters
-     * @return
+     * @author liuyazhuang
      */
-    private static Camera.Size getSmallestPreviewSize(int width, int height,
-                                                      Camera.Parameters parameters) {
-        Camera.Size result = null;
-        for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
-            if (size.width <= width && size.height <= height) {
-                if (result == null) {
-                    result = size;
-                } else {
-                    int resultArea = result.width * result.height;
-                    int newArea = size.width * size.height;
-                    if (newArea < resultArea)
-                        result = size;
-                }
-            }
-        }
-        return result;
+    public static enum TYPE {
+        GREEN, RED
     }
-
-
 }

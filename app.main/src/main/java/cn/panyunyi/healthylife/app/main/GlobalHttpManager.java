@@ -14,23 +14,36 @@ import okhttp3.Response;
 /*
  *create by panyunyi on2018/4/30
  */
-class GlobalHttpManager {
-    private String TAG="GlobalHttpManager";
+public class GlobalHttpManager {
     public static final MediaType JSONs
             = MediaType.parse("application/json; charset=utf-8");
-    private static final GlobalHttpManager ourInstance = new GlobalHttpManager();
-    OkHttpClient client;
-    static GlobalHttpManager getInstance() {
+    public static OkHttpClient client;
+    private static String TAG = "GlobalHttpManager";
+    private static GlobalHttpManager ourInstance = null;
+
+    private GlobalHttpManager() {
+        client = new OkHttpClient();
+    }
+
+    public static GlobalHttpManager getInstance() {
+        if (ourInstance == null)
+            ourInstance = new GlobalHttpManager();
         return ourInstance;
     }
 
-    private GlobalHttpManager() {
-        client=new OkHttpClient();
+    public SendGet getMethodManager(String url) {
+        SendGet sendGet = new SendGet(url);
+        return sendGet;
     }
 
+    public SendPost postMethodManager(String url, String json) {
+        SendPost sendPost = new SendPost(url, json);
+        return sendPost;
+    }
     public  class SendPost implements Callable<Object> {
         String url;
         String json;
+
         public SendPost(String url, String json) {
             this.url = url;
 
@@ -39,14 +52,14 @@ class GlobalHttpManager {
         }
 
         String post() throws IOException {
-            RequestBody body =RequestBody.create(JSONs,json);
+            RequestBody body = RequestBody.create(JSONs, json);
             Request request = new Request.Builder()
                     .url(url)
                     .post(body)
                     .build();
-            Log.i(TAG,request.toString());
+            Log.i(TAG, request.toString());
             Response response = client.newCall(request).execute();
-            String r=response.body().string();
+            String r = response.body().string();
             return r;
         }
 
@@ -59,7 +72,7 @@ class GlobalHttpManager {
 
     public  class SendGet implements Callable<Object> {
         String url;
-        String json;
+
         public SendGet(String url) {
             this.url = url;
         }
@@ -69,9 +82,9 @@ class GlobalHttpManager {
                     .url(url)
                     .get()
                     .build();
-            Log.i(TAG,request.toString());
+            Log.i(TAG, request.toString());
             Response response = client.newCall(request).execute();
-            String r=response.body().string();
+            String r = response.body().string();
             return r;
         }
 

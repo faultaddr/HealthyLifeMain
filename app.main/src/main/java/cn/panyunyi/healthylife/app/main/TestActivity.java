@@ -13,7 +13,6 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.panyunyi.healthylife.app.main.ui.custom.RadarView;
-import cn.panyunyi.healthylife.app.main.R;
 
 public class TestActivity extends AppCompatActivity implements SensorEventListener {
     private static final int sensorTypeD = Sensor.TYPE_STEP_DETECTOR;
