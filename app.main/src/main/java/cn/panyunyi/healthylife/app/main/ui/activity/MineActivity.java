@@ -20,6 +20,8 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -34,6 +36,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.panyunyi.healthylife.app.main.Constant;
 import cn.panyunyi.healthylife.app.main.R;
+import cn.panyunyi.healthylife.app.main.biz.remote.model.MUserEntity;
 import cn.panyunyi.healthylife.app.main.biz.remote.service.FileUpLoadService;
 import cn.panyunyi.healthylife.app.main.biz.remote.service.LoginSession;
 import cn.panyunyi.healthylife.app.main.event.MessageEvent;
@@ -69,7 +72,7 @@ public class MineActivity extends AppCompatActivity implements View.OnClickListe
     //变量
     @Override
     public void onBackPressed() {
-        if (fragment.isVisible()) {
+        if (fragment!=null&&fragment.isVisible()) {
             getFragmentManager().beginTransaction().remove(fragment).commit();
             fragment = null;
         } else {
@@ -145,8 +148,10 @@ public class MineActivity extends AppCompatActivity implements View.OnClickListe
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void handleLoginStatus(MessageEvent messageEvent) {
         if (messageEvent.getMessageType().equals(Constant.loginStatus)) {
-            if (messageEvent.getMessageContent().equals("true")) {
-                mUserName.setText(messageEvent.getMessageContent());
+            if (messageEvent.getMessageContent()!=null) {
+
+                MUserEntity userEntity= JSON.parseObject(messageEvent.getMessageContent(),MUserEntity.class);
+                mUserName.setText(userEntity.getUserName());
             } else {
                 mUserName.setText("游客");
             }
@@ -157,20 +162,24 @@ public class MineActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.user_pic: {
+                //从本地选取头像上传
+                /* 开启Pictures画面Type设定为image */
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                /* 使用Intent.ACTION_GET_CONTENT这个Action */
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                /* 取得相片后返回本画面 */
+                startActivityForResult(intent, 1);
+            }
+                break;
             case R.id.mine_activity_mine_info:
                 if (LoginSession.getLoginSession().getLoginedUser() == null) {
                     Intent intent = new Intent();
                     intent.setClass(this, LoginActivity.class);
                     startActivityForResult(intent, 0);
                 } else {
-                    //从本地选取头像上传
-                    /* 开启Pictures画面Type设定为image */
-                    Intent intent = new Intent();
-                    intent.setType("image/*");
-                    /* 使用Intent.ACTION_GET_CONTENT这个Action */
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    /* 取得相片后返回本画面 */
-                    startActivityForResult(intent, 1);
+
                 }
                 break;
             case R.id.mine_activity_search_update:

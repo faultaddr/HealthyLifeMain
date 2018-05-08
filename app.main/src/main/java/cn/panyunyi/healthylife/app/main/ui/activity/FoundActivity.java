@@ -34,6 +34,7 @@ import cn.panyunyi.healthylife.app.main.Constant;
 import cn.panyunyi.healthylife.app.main.GlobalHttpManager;
 import cn.panyunyi.healthylife.app.main.R;
 import cn.panyunyi.healthylife.app.main.biz.local.model.MyListItem;
+import cn.panyunyi.healthylife.app.main.ui.custom.WebViewDialog;
 import cn.panyunyi.healthylife.app.main.ui.custom.ZoomInTransform;
 
 
@@ -170,8 +171,12 @@ public class FoundActivity extends AppCompatActivity {
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             ImageView imageView = new ImageView(mContext);
-            imageView.setImageResource(drawableIds[position]);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            Picasso.with(mContext)
+                    .load(Constant.API_URL + "/img/main_"+(position+1)+"_small.jpg")
+                    .resize(240, 240)
+                    .centerCrop()
+                    .into(imageView);
             container.addView(imageView);
             return imageView;
         }
@@ -211,6 +216,14 @@ public class FoundActivity extends AppCompatActivity {
                     .centerCrop()
                     .into(myViewHolder.imageView);
             myViewHolder.description.setText(linkUrlList.get(i).getDescription());
+            final int pos=i;
+            myViewHolder.getInto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    WebViewDialog dialog=WebViewDialog.newInstance(Constant.API_URL+linkUrlList.get(pos).getLinkUrl());
+                    dialog.show(getSupportFragmentManager(),"dialog");
+                }
+            });
         }
 
         @Override

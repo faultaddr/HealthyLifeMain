@@ -42,7 +42,7 @@ public class LoginImpl implements LoginManager {
     }
 
     @Override
-    public boolean login() {
+    public String login() {
         MUserEntity loginedUser = new MUserEntity();
 //        loginedUser.userId=muser.userId;
 //        loginedUser.userAlipay=muser.userAlipay;
@@ -78,10 +78,10 @@ public class LoginImpl implements LoginManager {
             Log.i(">>>", result);
             loginedUser = JSON.parseObject(result, MUserEntity.class);
             LoginSession.getLoginSession().setsLoginSession(loginedUser);
-            return !LoginResult(result.equals("\"false\""));
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
 
 
@@ -111,6 +111,7 @@ public class LoginImpl implements LoginManager {
                     .build();
             Log.i(TAG, request.toString());
             Response response = client.newCall(request).execute();
+            if(response.code()!=200)return "false";
             String r = response.body().string();
             return r;
         }

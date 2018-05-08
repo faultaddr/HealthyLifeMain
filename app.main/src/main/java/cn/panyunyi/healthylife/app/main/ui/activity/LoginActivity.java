@@ -65,10 +65,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     new Thread() {
                         public void run() {
 
-                            boolean result = login.login();
+                            String result = login.login();
                             Log.i("LoginActivity>>>result", result + "");
-                            if (result) {
-                                MessageEvent messageEvent = new MessageEvent("loginStatus", "true");
+                            if (result!=null) {
+                                MessageEvent messageEvent = new MessageEvent("loginStatus", result);
 
                                 EventBus.getDefault().post(messageEvent);
 

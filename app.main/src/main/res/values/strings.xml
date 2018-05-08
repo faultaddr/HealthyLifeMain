@@ -110,4 +110,7 @@
                                 如有相关广告合作，请联系 潘云逸 17888823635 cufer@foxmail.com
     </string>
     <string name="seriously_informed">郑重声明</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
