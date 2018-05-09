@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import cn.panyunyi.healthylife.app.main.GlobalHttpManager;
+import cn.panyunyi.healthylife.app.main.manager.GlobalHttpManager;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;

@@ -20,6 +20,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,9 +37,16 @@ import cn.panyunyi.healthylife.app.main.R;
     FrameLayout frameLayout;
     String str[] = {"tangshang", "fashao", "yatong", "niushang", "shiwuzhongdu", "meiqizhongdu", "jiujingzhongdu", "yugucihou", "zhongshu", "futong", "liubixue",
             "toutong", "dianxian", "shenjingshuaishuo", "huxikunnan", "jixingfeiyan", "weijingluan", "xinjiaotong", "naoyixue", "hunmi", "zhixi", "mifengzheshang",
-            "choujing", "zhongfeng", "chudian", "chongwuyaoshang", "chuxue", "toubushoushang", "tufaerlong", "xinzangzhouting",
+            "choujin", "zhongfeng", "chudian", "chongwuyaoshang", "chuxue", "toubushoushang", "tufaerlong", "xinzangzhouting",
             "rengonghuxi", "zhashang", "fucuoyao", "guzhe", "nishui", "shouzhiqieduan", "yiwukahou", "muci", "shaoshang", "shouzhiqieshang",
             "shixuexiuke", "yiwuruyan", "weichuankong", "zhijiashoucuo"
+    };
+    String chinese[] = {
+            "烫伤", "发烧", "牙痛", "扭伤", "食物中毒", "煤气中毒", "酒精中毒", "鱼骨刺喉", "中暑", "腹痛", "流鼻血",
+            "头痛", "癫痫", "神经衰弱", "呼吸困难", "急性肺炎", "胃痉挛", "心绞痛", "脑溢血", "昏迷", "窒息", "蜜蜂蜇伤",
+            "抽筋", "中风", "触电", "宠物咬伤", "出血", "头部受伤", "突发耳聋", "心脏骤停",
+            "人工呼吸", "扎伤", "服错药", "骨折", "溺水", "手指切断", "异物卡喉", "木刺", "烧伤", "手指切伤",
+            "失血休克", "异物入眼", "胃穿孔", "指甲受挫"
     };
 
     private MyGridViewAdapter adapter;
@@ -104,7 +112,20 @@ import cn.panyunyi.healthylife.app.main.R;
                 int g = random.nextInt(256);
                 int b = random.nextInt(256);
                 convertView.findViewById(R.id.img).setBackgroundColor(Color.rgb(r,g,b));*/
-                ((TextView) (convertView.findViewById(R.id.text))).setText(gridDataList.get(position).toString());
+                ((TextView) (convertView.findViewById(R.id.text))).setText(chinese[position]);
+                Random random = new Random();
+                int r = random.nextInt(4);
+                switch (r) {
+                    case 1:
+                        ((ImageView) (convertView.findViewById(R.id.img))).setImageResource(R.drawable.grid_1);
+                        break;
+                    case 2:
+                        ((ImageView) (convertView.findViewById(R.id.img))).setImageResource(R.drawable.grid_2);
+                        break;
+                    case 3:
+                        ((ImageView) (convertView.findViewById(R.id.img))).setImageResource(R.drawable.grid_3);
+                        break;
+                }
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

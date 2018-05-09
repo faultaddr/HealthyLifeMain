@@ -58,7 +58,7 @@ public class BeatDataDao {
             int datePos = cursor.getColumnIndex("currentDate");
             int beatsPos = cursor.getColumnIndex("beats");
             int timePos = cursor.getColumnIndex("timeCount");
-            beatEntity.currentDate = cursor.getString(datePos);
+            beatEntity.currentDateDetail = cursor.getString(datePos);
             beatEntity.beats = cursor.getString(beatsPos);
             beatEntity.timeCount = cursor.getString(timePos);
         }
@@ -79,7 +79,7 @@ public class BeatDataDao {
             int datePos = cursor.getColumnIndex("currentDate");
             int beatsPos = cursor.getColumnIndex("beats");
             int timePos = cursor.getColumnIndex("timeCount");
-            beatEntity.currentDate = cursor.getString(datePos);
+            beatEntity.currentDateDetail = cursor.getString(datePos);
             beatEntity.beats = cursor.getString(beatsPos);
             beatEntity.timeCount = cursor.getString(timePos);
             Log.i(TAG, beatEntity.beats);
@@ -91,7 +91,7 @@ public class BeatDataDao {
 
     public void addNewData(BeatEntity entity) {
         ContentValues contentvalues = new ContentValues();
-        contentvalues.put("currentDate", entity.currentDate);
+        contentvalues.put("currentDate", entity.currentDateDetail);
         contentvalues.put("beats", entity.beats);
         contentvalues.put("timeCount", entity.timeCount);
         helper.insert("beat", contentvalues);
@@ -99,10 +99,10 @@ public class BeatDataDao {
 
     public void updateCurrentData(BeatEntity entity) {
         ContentValues contentvalues = new ContentValues();
-        contentvalues.put("currentDate", entity.currentDate);
+        contentvalues.put("currentDate", entity.currentDateDetail);
         contentvalues.put("beats", entity.beats);
         contentvalues.put("timeCount", entity.timeCount);
-        helper.update("beat", contentvalues, "currentDate=?", new String[]{entity.currentDate});
+        helper.update("beat", contentvalues, "currentDate=?", new String[]{entity.currentDateDetail});
     }
 }
 

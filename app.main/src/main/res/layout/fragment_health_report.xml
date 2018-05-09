@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.github.mikephil.charting.charts.RadarChart
+        android:id="@+id/radar_chart"
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+
+    </com.github.mikephil.charting.charts.RadarChart>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_below="@id/radar_chart"
+        android:background="#ececec" />
+
+    <RelativeLayout
+        android:id="@+id/beat_area"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@id/radar_chart"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/beat_healthy_degree"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
+            android:gravity="center"
+            android:text="@string/beat_healthy_degree" />
+
+        <RatingBar
+            android:id="@+id/beat_rating_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/beat_healthy_degree"
+            android:scaleX="0.7"
+            android:scaleY="0.7" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_below="@id/beat_area"
+        android:background="#ececec" />
+
+    <RelativeLayout
+        android:id="@+id/step_area"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@id/beat_area"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/step_healthy_degree"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
+            android:gravity="center"
+            android:text="@string/step_healthy_degree" />
+
+        <RatingBar
+            android:id="@+id/step_rating_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/step_healthy_degree"
+            android:scaleX="0.7"
+            android:scaleY="0.7" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_below="@id/step_area"
+        android:background="#ececec" />
+
+    <RelativeLayout
+        android:id="@+id/general_area"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@id/step_area"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/general_healthy_degree"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
+            android:gravity="center"
+            android:text="@string/general_healthy_degree" />
+
+        <RatingBar
+            android:id="@+id/general_rating_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/general_healthy_degree"
+            android:scaleX="0.7"
+            android:scaleY="0.7" />
+    </RelativeLayout>
+</RelativeLayout>

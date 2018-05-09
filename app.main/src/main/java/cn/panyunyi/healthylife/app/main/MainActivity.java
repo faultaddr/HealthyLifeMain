@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          * EventBus
          *
          * */
-        EventBus.builder().addIndex(new MyEventBusIndex()).installDefaultEventBus();
+
 // Now the default instance uses the given index. Use it like this:
         eventBus = EventBus.getDefault();
         eventBus.register(this);

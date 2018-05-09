@@ -126,7 +126,7 @@ public class DetailActivity extends AppCompatActivity {
             data.setData(lineData);
             data.setData(barData);
             chart.setData(data);
-            chart.animateY(3000);
+            chart.animateY(500);
             chart.invalidate(); // refresh
             Description description = new Description();
             description.setText("心率波动值");
@@ -236,7 +236,7 @@ public class DetailActivity extends AppCompatActivity {
                     sum += Integer.parseInt(entity.beats);
 
                 }
-                viewHolder.dateInfo.setText(list.get(0).currentDate);
+                viewHolder.dateInfo.setText(list.get(0).currentDateDetail);
                 viewHolder.detailInfo.setText(sum / list.size() + " ");
             }
 

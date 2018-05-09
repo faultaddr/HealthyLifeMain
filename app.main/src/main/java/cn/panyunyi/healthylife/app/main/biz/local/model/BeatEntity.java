@@ -6,7 +6,7 @@ package cn.panyunyi.healthylife.app.main.biz.local.model;
 
 public class BeatEntity {
     public String beats;
-    public String currentDate;
+    public String currentDateDetail;
     public String timeCount;
     public int userId;
 
@@ -19,11 +19,11 @@ public class BeatEntity {
     }
 
     public String getCurrentDate() {
-        return currentDate;
+        return currentDateDetail;
     }
 
     public void setCurrentDate(String currentDate) {
-        this.currentDate = currentDate;
+        this.currentDateDetail = currentDate;
     }
 
     public String getTimeCount() {

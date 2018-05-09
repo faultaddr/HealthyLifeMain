@@ -113,4 +113,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="beat_healthy_degree">心率健康指数</string>
+    <string name="step_healthy_degree">运动健康指数</string>
+    <string name="general_healthy_degree">综合健康指数</string>
 </resources>

@@ -37,13 +37,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import cn.panyunyi.healthylife.app.main.Constant;
-import cn.panyunyi.healthylife.app.main.GlobalHttpManager;
 import cn.panyunyi.healthylife.app.main.MainActivity;
 import cn.panyunyi.healthylife.app.main.R;
 import cn.panyunyi.healthylife.app.main.biz.local.dao.StepDataDao;
 import cn.panyunyi.healthylife.app.main.biz.local.model.StepEntity;
 import cn.panyunyi.healthylife.app.main.biz.remote.service.LoginSession;
 import cn.panyunyi.healthylife.app.main.event.MessageEvent;
+import cn.panyunyi.healthylife.app.main.manager.GlobalHttpManager;
 import cn.panyunyi.healthylife.app.main.util.TimeUtil;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;

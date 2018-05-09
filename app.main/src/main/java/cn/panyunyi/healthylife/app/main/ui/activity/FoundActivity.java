@@ -33,9 +33,9 @@ import java.util.concurrent.Future;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.panyunyi.healthylife.app.main.Constant;
-import cn.panyunyi.healthylife.app.main.GlobalHttpManager;
 import cn.panyunyi.healthylife.app.main.R;
 import cn.panyunyi.healthylife.app.main.biz.local.model.MyListItem;
+import cn.panyunyi.healthylife.app.main.manager.GlobalHttpManager;
 import cn.panyunyi.healthylife.app.main.ui.custom.WebViewDialog;
 import cn.panyunyi.healthylife.app.main.ui.custom.ZoomInTransform;
 import cn.panyunyi.healthylife.app.main.ui.fragment.FirstAidFragment;
@@ -65,6 +65,7 @@ public class FoundActivity extends AppCompatActivity {
 
     private MyPagerAdapter mViewPagerAdapter;
     private RecyclerViewAdapter mRecyclerAdapter;
+    FirstAidFragment firstAidFragment;
     @SuppressLint("HandlerLeak")
     public Handler mHandler = new Handler() {
         @Override
@@ -78,6 +79,19 @@ public class FoundActivity extends AppCompatActivity {
     private Context mContext;
     private List<MyListItem> itemList = new ArrayList<>();
     private String TAG = "FoundActivity";
+
+
+    @Override
+    public void onBackPressed() {
+        if (firstAidFragment != null && firstAidFragment.isVisible()) {
+            getFragmentManager().beginTransaction().remove(firstAidFragment).commit();
+            firstAidFragment = null;
+        } else {
+            super.onBackPressed();
+        }
+
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,7 +177,7 @@ public class FoundActivity extends AppCompatActivity {
         mFirstAid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirstAidFragment firstAidFragment = new FirstAidFragment();
+                firstAidFragment = new FirstAidFragment();
                 android.app.FragmentManager fragmentManager = getFragmentManager();
                 android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.add(R.id.fragment_container, firstAidFragment);

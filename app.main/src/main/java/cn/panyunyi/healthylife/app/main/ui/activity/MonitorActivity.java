@@ -47,12 +47,12 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import cn.panyunyi.healthylife.app.main.Constant;
-import cn.panyunyi.healthylife.app.main.GlobalHttpManager;
 import cn.panyunyi.healthylife.app.main.R;
 import cn.panyunyi.healthylife.app.main.biz.local.dao.BeatDataDao;
 import cn.panyunyi.healthylife.app.main.biz.local.model.BeatEntity;
 import cn.panyunyi.healthylife.app.main.biz.remote.service.LoginSession;
 import cn.panyunyi.healthylife.app.main.event.MessageEvent;
+import cn.panyunyi.healthylife.app.main.manager.GlobalHttpManager;
 import cn.panyunyi.healthylife.app.main.util.ImageProcessing;
 import cn.panyunyi.healthylife.app.main.util.TimeUtil;
 import io.reactivex.Observable;
@@ -211,7 +211,7 @@ public class MonitorActivity extends Activity {
                 BeatEntity entity = new BeatEntity();
                 Log.i(TAG, preferences.getString("count", null) + "");
                 entity.timeCount = preferences.getString("count", null);
-                entity.currentDate = TimeUtil.getCurrentDateDetail();
+                entity.currentDateDetail = TimeUtil.getCurrentDateDetail();
                 entity.beats = String.valueOf(beatsAvg);
                 if (LoginSession.getLoginSession().getLoginedUser() != null) {
                     entity.userId = LoginSession.getLoginSession().getLoginedUser().getUserId();
@@ -362,7 +362,7 @@ public class MonitorActivity extends Activity {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             BeatEntity entity = new BeatEntity();
             entity.timeCount = preferences.getString("count", null);
-            entity.currentDate = TimeUtil.getCurrentDateDetail();
+            entity.currentDateDetail = TimeUtil.getCurrentDateDetail();
             entity.beats = String.valueOf(beatsAvg);
             boolean isLogin = false;
             if (LoginSession.getLoginSession().getLoginedUser() != null) {

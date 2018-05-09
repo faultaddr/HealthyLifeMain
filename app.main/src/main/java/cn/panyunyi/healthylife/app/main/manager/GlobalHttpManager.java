@@ -1,4 +1,4 @@
-package cn.panyunyi.healthylife.app.main;
+package cn.panyunyi.healthylife.app.main.manager;
 
 import android.util.Log;
 

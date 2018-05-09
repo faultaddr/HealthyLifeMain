@@ -6,7 +6,10 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
+import org.greenrobot.eventbus.EventBus;
+
 import cn.panyunyi.healthylife.app.main.Constant;
+import cn.panyunyi.healthylife.app.main.MyEventBusIndex;
 import cn.panyunyi.healthylife.app.main.biz.local.service.StepService;
 
 
@@ -18,6 +21,7 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        EventBus.builder().addIndex(new MyEventBusIndex()).installDefaultEventBus();
         application = this;
         Constant constant = new Constant(Application.this);
         constant.setConstants();
