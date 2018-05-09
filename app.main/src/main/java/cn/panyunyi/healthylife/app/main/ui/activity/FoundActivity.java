@@ -16,7 +16,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
@@ -36,6 +38,7 @@ import cn.panyunyi.healthylife.app.main.R;
 import cn.panyunyi.healthylife.app.main.biz.local.model.MyListItem;
 import cn.panyunyi.healthylife.app.main.ui.custom.WebViewDialog;
 import cn.panyunyi.healthylife.app.main.ui.custom.ZoomInTransform;
+import cn.panyunyi.healthylife.app.main.ui.fragment.FirstAidFragment;
 
 
 public class FoundActivity extends AppCompatActivity {
@@ -49,6 +52,16 @@ public class FoundActivity extends AppCompatActivity {
     TextView mInterestingTv;
     @BindView(R.id.info_list_view)
     RecyclerView mInfoListView;
+    @BindView(R.id.menu_daily_top)
+    LinearLayout mDailyTop;
+    @BindView(R.id.menu_related_news)
+    LinearLayout mRelatedNews;
+    @BindView(R.id.menu_healthy_report)
+    LinearLayout mHealthyReport;
+    @BindView(R.id.menu_first_aid)
+    LinearLayout mFirstAid;
+    @BindView(R.id.fragment_container)
+    FrameLayout frameLayout;
 
     private MyPagerAdapter mViewPagerAdapter;
     private RecyclerViewAdapter mRecyclerAdapter;
@@ -124,6 +137,38 @@ public class FoundActivity extends AppCompatActivity {
             @Override
             public void onPageScrollStateChanged(int state) {
 
+            }
+        });
+
+
+        mDailyTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        mRelatedNews.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        mHealthyReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        mFirstAid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirstAidFragment firstAidFragment = new FirstAidFragment();
+                android.app.FragmentManager fragmentManager = getFragmentManager();
+                android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.add(R.id.fragment_container, firstAidFragment);
+                fragmentTransaction.show(firstAidFragment);
+                fragmentTransaction.commit();
             }
         });
     }
