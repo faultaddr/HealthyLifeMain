@@ -13,6 +13,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import cn.panyunyi.healthylife.app.main.Constant;
 import cn.panyunyi.healthylife.app.main.biz.remote.model.MUserEntity;
@@ -30,7 +31,10 @@ public class LoginImpl implements LoginManager {
 
     public static final MediaType JSONs
             = MediaType.parse("application/json; charset=utf-8");
-    static OkHttpClient client = new OkHttpClient();
+    static OkHttpClient client =  new OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .build();  ;
     private static String TAG = "LoginImpl";
     String result;
     private MUserEntity muser;

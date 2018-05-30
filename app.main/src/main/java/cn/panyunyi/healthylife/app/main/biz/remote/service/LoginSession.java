@@ -2,6 +2,7 @@ package cn.panyunyi.healthylife.app.main.biz.remote.service;
 
 
 import cn.panyunyi.healthylife.app.main.biz.remote.model.MUserEntity;
+import cn.panyunyi.healthylife.app.main.util.ACache;
 
 /**
  * Created by panyu on 2017/6/9.

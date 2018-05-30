@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activity.InputActivity">
+    <TextView
+        android:text="数据输入"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="40dp" />
+<TextView
+    android:id="@+id/type"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:onClick="onConstellationPicker"
+    android:text="请选择存储数据类型"
+    android:gravity="center"
+   />
+<EditText
+    android:id="@+id/data"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:layout_centerInParent="true"
+    android:hint="数据大小"
+    android:textColor="#000000"
+    />
+    <TextView
+        android:id="@+id/submit"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/data"
+        android:layout_marginTop="20dp"
+        android:text="提交"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:background="@drawable/gradient_bg"
+        />
+    <TextView
+        android:layout_alignParentBottom="true"
+        android:id="@+id/time"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:onClick="onYearMonthDayTimePicker"
+        android:text="请选择时间"
+        android:gravity="center"
+        />
+
+
+
+</RelativeLayout >

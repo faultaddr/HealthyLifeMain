@@ -43,7 +43,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
                 android:gravity="center"
-                android:text="xiaoming"
+                android:text="游客"
                 android:layout_below="@id/user_area"
                 android:textColor="@color/orange" />
 

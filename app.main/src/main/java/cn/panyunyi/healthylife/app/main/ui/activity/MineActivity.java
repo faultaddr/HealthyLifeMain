@@ -163,14 +163,19 @@ public class MineActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.user_pic: {
-                //从本地选取头像上传
-                /* 开启Pictures画面Type设定为image */
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                /* 使用Intent.ACTION_GET_CONTENT这个Action */
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                /* 取得相片后返回本画面 */
-                startActivityForResult(intent, 1);
+                if(LoginSession.getLoginSession().getLoginedUser()!=null) {
+                    //从本地选取头像上传
+                    /* 开启Pictures画面Type设定为image */
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    /* 使用Intent.ACTION_GET_CONTENT这个Action */
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    /* 取得相片后返回本画面 */
+                    startActivityForResult(intent, 1);
+                }else{
+                    snackbar = Snackbar.make(mDeleteData, "请先登录", Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+                }
             }
                 break;
             case R.id.mine_activity_mine_info:
@@ -183,7 +188,8 @@ public class MineActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.mine_activity_search_update:
-
+                snackbar = Snackbar.make(mDeleteData, "已经是最新版本", Snackbar.LENGTH_SHORT);
+                snackbar.show();
                 break;
             case R.id.mine_activity_related_info:
                 fragment = new RelatedInfoFragment();

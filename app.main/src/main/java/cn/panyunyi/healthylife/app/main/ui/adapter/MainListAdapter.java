@@ -1,6 +1,7 @@
 package cn.panyunyi.healthylife.app.main.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -22,10 +23,14 @@ import com.github.mikephil.charting.data.LineDataSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.panyunyi.healthylife.app.main.MainActivity;
 import cn.panyunyi.healthylife.app.main.R;
 import cn.panyunyi.healthylife.app.main.biz.local.dao.BeatDataDao;
+import cn.panyunyi.healthylife.app.main.biz.local.dao.PressDataDao;
 import cn.panyunyi.healthylife.app.main.biz.local.model.BeatEntity;
+import cn.panyunyi.healthylife.app.main.biz.local.model.PressEntity;
 import cn.panyunyi.healthylife.app.main.db.DataBaseOpenHelper;
+import cn.panyunyi.healthylife.app.main.ui.activity.InputActivity;
 import cn.panyunyi.healthylife.app.main.util.TimeUtil;
 
 /**
@@ -99,7 +104,7 @@ public class MainListAdapter extends BaseAdapter {
         Log.i(TAG, "steps is" + steps);
         final int position = i;
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        view = inflater.inflate(R.layout.main_page_list_item, null);
+         view = inflater.inflate(R.layout.main_page_list_item, null);
         if (itemView != null) {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -125,8 +130,8 @@ public class MainListAdapter extends BaseAdapter {
                     unit.setText("现在去测量");
                     unit.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View view) {
-                            itemView.itemViewClicked(view.getId());
+                        public void onClick(View v) {
+
                         }
                     });
                 } else {
@@ -170,6 +175,32 @@ public class MainListAdapter extends BaseAdapter {
             break;
 
             case 2:
+            {
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent=new Intent();
+                        intent.setClass(mContext, InputActivity.class);
+                        mContext.startActivity(intent);
+                    }
+                });
+                LineChart chart = view.findViewById(R.id.chart);
+                chart.setVisibility(View.VISIBLE);
+                initChartData(i, chart);
+                TextView title = (TextView) view.findViewById(R.id.main_list_item_text);
+                TextView date = view.findViewById(R.id.date);
+                final TextView description = view.findViewById(R.id.detail);
+                date.setVisibility(View.VISIBLE);
+                date.setText(TimeUtil.getCurrentDate());
+                TextView unit = view.findViewById(R.id.unit);
+                unit.setVisibility(View.INVISIBLE);
+                title.setText(mContext.getText(s[i]));
+                title.setTextSize(16);
+                Drawable drawable = mContext.getDrawable(d[i]);
+                drawable.setBounds(20, 0, 80, 60);
+                title.setCompoundDrawables(drawable, null, null, null);
+                view.setTag(i);}
+                break;
             case 3:
 
                 TextView title = (TextView) view.findViewById(R.id.main_list_item_text);
@@ -185,6 +216,14 @@ public class MainListAdapter extends BaseAdapter {
                 drawable.setBounds(20, 0, 80, 60);
                 title.setCompoundDrawables(drawable, null, null, null);
                 view.setTag(i);
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent=new Intent();
+                        intent.setClass(mContext, InputActivity.class);
+                        mContext.startActivity(intent);
+                    }
+                });
                 break;
 
         }
@@ -235,6 +274,7 @@ public class MainListAdapter extends BaseAdapter {
             break;
 
             case 1:
+            {
                 DataBaseOpenHelper helper = DataBaseOpenHelper.getInstance(mContext, "step", 1, null);
                 Cursor cursor = helper.query("step", "");
                 if (cursor.getCount() == 0) {
@@ -279,6 +319,54 @@ public class MainListAdapter extends BaseAdapter {
                     description.setText("最近七天步数排行");
                     ((LineChart) t).setDescription(description);
                 }
+        }
+                break;
+            case 2:
+                {
+                    List<Entry> entries = new ArrayList<>();
+                    List<String> index = new ArrayList<>();
+                    List<PressEntity> pressList = PressDataDao.getInstance(mContext).getAllPress();
+                    int count = 0;
+                    if (pressList != null) {
+                        for (PressEntity entity : pressList) {
+                            try {
+                                entries.add(new Entry((float) count, (float) Integer.parseInt(entity.press)));
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                            count++;
+                        }
+
+                        if (entries.size() != 0) {
+                            LineDataSet dataSet = new LineDataSet(entries, "血压");
+                            // add entries to dataset..
+                            dataSet.setCubicIntensity(0.2f);
+                            dataSet.setDrawFilled(true);
+                            dataSet.setDrawCircles(false);
+                            dataSet.setLineWidth(1.8f);
+                            dataSet.setCircleRadius(4f);
+                            dataSet.setCircleColor(Color.GREEN);
+                            dataSet.setHighLightColor(Color.rgb(244, 117, 117));
+                            dataSet.setColor(Color.GREEN);
+                            dataSet.setFillColor(Color.GREEN);
+                            dataSet.setFillAlpha(100);
+                            dataSet.setDrawHorizontalHighlightIndicator(false);
+                            LineData lineData = new LineData(dataSet);
+                            ((LineChart) t).setData(lineData);
+                            ((LineChart) t).animateY(3000);
+                            ((LineChart) t).invalidate(); // refresh
+                            Description description = new Description();
+                            description.setText("血压变化情况");
+                            ((LineChart) t).setDescription(description);
+                        } else {
+                            ((LineChart) t).setVisibility(View.GONE);
+                        }
+                    } else {
+                        ((LineChart) t).setVisibility(View.GONE);
+                    }
+                }
+
+
                 break;
             default:
                 DataBaseOpenHelper helper1 = DataBaseOpenHelper.getInstance(mContext, "beats", 1, new ArrayList<String>());

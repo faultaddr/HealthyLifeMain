@@ -2,7 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/gradient_bg_litter"
+    >
 
     <com.github.mikephil.charting.charts.RadarChart
         android:id="@+id/radar_chart"
@@ -39,6 +41,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/beat_healthy_degree"
+            android:numStars="5"
             android:scaleX="0.7"
             android:scaleY="0.7" />
     </RelativeLayout>
@@ -62,6 +65,7 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="4dp"
             android:gravity="center"
+
             android:text="@string/step_healthy_degree" />
 
         <RatingBar
@@ -71,6 +75,8 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/step_healthy_degree"
+            android:numStars="5"
+
             android:scaleX="0.7"
             android:scaleY="0.7" />
     </RelativeLayout>
@@ -103,7 +109,31 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/general_healthy_degree"
+            android:numStars="5"
             android:scaleX="0.7"
             android:scaleY="0.7" />
     </RelativeLayout>
+
+    <View
+        android:layout_below="@id/general_area"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#ececec"
+        >
+
+
+    </View>
+    <TextView
+        android:id="@+id/report_detail"
+        android:layout_below="@id/general_area"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:background="#ffffff"
+        android:textColor="#333333"
+        android:paddingHorizontal="30dp"
+        android:paddingTop="20dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        />
 </RelativeLayout>

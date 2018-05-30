@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -22,7 +23,10 @@ public class GlobalHttpManager {
     private static GlobalHttpManager ourInstance = null;
 
     private GlobalHttpManager() {
-        client = new OkHttpClient();
+        client =  new OkHttpClient.Builder()
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
+                .build();
     }
 
     public static GlobalHttpManager getInstance() {

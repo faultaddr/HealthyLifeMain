@@ -32,6 +32,7 @@ import butterknife.ButterKnife;
 import cn.panyunyi.healthylife.app.main.event.MessageEvent;
 import cn.panyunyi.healthylife.app.main.ui.activity.DetailActivity;
 import cn.panyunyi.healthylife.app.main.ui.activity.FoundActivity;
+import cn.panyunyi.healthylife.app.main.ui.activity.InputActivity;
 import cn.panyunyi.healthylife.app.main.ui.activity.MineActivity;
 import cn.panyunyi.healthylife.app.main.ui.activity.MonitorActivity;
 import cn.panyunyi.healthylife.app.main.ui.adapter.MainListAdapter;
@@ -107,15 +108,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void itemViewClicked(int id) {
                 //TODO item 的点击事件分发到这里
-                switch (id) {
-                    case 1:
 
+                Log.i(TAG,""+id);
+                switch (id) {
+                    case 0:
+                        if (requestPermission() == 1) {
+                            startMonitorActivity();
+                        }
+                        break;
+                    case 1:
                         break;
                     case 2:
+                        Intent intent=new Intent();
+                        intent.setClass(MainActivity.this, InputActivity.class);
+                        startActivity(intent);
                         break;
                     case 3:
-                        break;
-                    case 4:
                         break;
                 }
             }
@@ -166,14 +174,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
-        adapter.setOnClickItemView(new MainListAdapter.onClickItemView() {
-            @Override
-            public void itemViewClicked(int id) {
-                if (requestPermission() == 1) {
-                    startMonitorActivity();
-                }
-            }
-        });
+
 
     }
 

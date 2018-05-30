@@ -39,6 +39,7 @@ import cn.panyunyi.healthylife.app.main.manager.GlobalHttpManager;
 import cn.panyunyi.healthylife.app.main.ui.custom.WebViewDialog;
 import cn.panyunyi.healthylife.app.main.ui.custom.ZoomInTransform;
 import cn.panyunyi.healthylife.app.main.ui.fragment.FirstAidFragment;
+import cn.panyunyi.healthylife.app.main.ui.fragment.HealthReportFragment;
 
 
 public class FoundActivity extends AppCompatActivity {
@@ -65,7 +66,10 @@ public class FoundActivity extends AppCompatActivity {
 
     private MyPagerAdapter mViewPagerAdapter;
     private RecyclerViewAdapter mRecyclerAdapter;
+
     FirstAidFragment firstAidFragment;
+    HealthReportFragment reportFragment;
+
     @SuppressLint("HandlerLeak")
     public Handler mHandler = new Handler() {
         @Override
@@ -83,10 +87,13 @@ public class FoundActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (firstAidFragment != null && firstAidFragment.isVisible()) {
+        if ((firstAidFragment != null && firstAidFragment.isVisible())) {
             getFragmentManager().beginTransaction().remove(firstAidFragment).commit();
             firstAidFragment = null;
-        } else {
+        } else if((reportFragment!=null&&reportFragment.isVisible())){
+            getFragmentManager().beginTransaction().remove(reportFragment).commit();
+            firstAidFragment = null;
+        }else{
             super.onBackPressed();
         }
 
@@ -139,7 +146,7 @@ public class FoundActivity extends AppCompatActivity {
                 new ZoomInTransform());
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels){
 
             }
 
@@ -171,7 +178,12 @@ public class FoundActivity extends AppCompatActivity {
         mHealthyReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                reportFragment=new HealthReportFragment();
+                android.app.FragmentManager fragmentManager = getFragmentManager();
+                android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, reportFragment);
+                fragmentTransaction.show(reportFragment);
+                fragmentTransaction.commit();
             }
         });
         mFirstAid.setOnClickListener(new View.OnClickListener() {
